@@ -143,5 +143,3 @@ CREATE TABLE IF NOT EXISTS `cmf_comment` (
   KEY `create_time` (`create_time`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论表';
 
--- --------------------------------------------------------
-

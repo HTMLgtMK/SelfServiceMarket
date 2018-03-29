@@ -174,11 +174,13 @@ class IndexController extends Controller
             $userPass  = $this->request->param('manager_pwd');
             $userEmail = $this->request->param('manager_email');
 
-		$dbConfig['password'] = trim($dbConfig['password']);
             //检查密码。空 6-32字符。
             empty($userPass) && $this->error("密码不可以为空");
             strlen($userPass) < 6 && $this->error("密码长度最少6位");
             strlen($userPass) > 32 && $this->error("密码长度最多32位");
+
+	    // 去点数据库密码数据末尾的空格
+	    $dbConfig['password'] = trim($dbConfig['password']);
 
             $db     = Db::connect($dbConfig);
             $dbName = $this->request->param('dbname');
@@ -191,7 +193,20 @@ class IndexController extends Controller
 
             session('install.db_config', $dbConfig);
 
-            $sql = cmf_split_sql(APP_PATH . 'install/data/thinkcmf.sql', $dbConfig['prefix'], $dbConfig['charset']);
+            $sql_thinkcmf = cmf_split_sql(APP_PATH . 'install/data/thinkcmf.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_role = cmf_split_sql(APP_PATH . 'install/data/role.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_market = cmf_split_sql(APP_PATH . 'install/data/market.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_user = cmf_split_sql(APP_PATH . 'install/data/user.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_market_account = cmf_split_sql(APP_PATH . 'install/data/market_account.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_market_store = cmf_split_sql(APP_PATH . 'install/data/market_store.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_goods = cmf_split_sql(APP_PATH . 'install/data/goods.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_sale = cmf_split_sql(APP_PATH . 'install/data/sale.sql', $dbConfig['prefix'], $dbConfig['charset']);
+	    $sql_portal = cmf_split_sql(APP_PATH . 'install/data/portal.sql', $dbConfig['prefix'], $dbConfig['charset']);
+
+	   $sql = array_merge($sql_thinkcmf,$sql_role,$sql_market,$sql_user,
+			$sql_market_account,$sql_market_store,
+			$sql_goods,$sql_sale,$sql_portal);
+
             session('install.sql', $sql);
 
             $this->assign('sql_count', count($sql));

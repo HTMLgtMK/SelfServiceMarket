@@ -7,66 +7,68 @@
 -- 表的结构 `tb_adminstrator` 
 --
 
-CREATE TABLE IF NOT EXISTS `tb_adminstrator`(
+CREATE TABLE IF NOT EXISTS `tb_adminstrator` (
 	`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '员工id',
-	`name` char(50) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '员工姓名',
+	`name` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '员工姓名',
 	`mobile` char(11) NOT NULL COMMENT '员工登录手机号',
 	`user_pass` varchar(64) NOT NULL COMMENT '员工登录密码,cmf_password()加密',
 	`user_status` tinyint(3) NOT NULL DEFAULT '2' COMMENT '员工状态,0:离职,1:正常,2:未验证',
-	`birthday` int(11) DEFAULT ‘0’ COMMENT '员工生日',
+	`birthday` int(11) DEFAULT '0' COMMENT '员工生日',
 	`sex` tinyint(2) DEFAULT '1' COMMENT '员工性别,1:男,2:女',
 	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '入职时间',
-	`post` int UNSINGED NOT NULL COMMENT '员工岗位',
+	`post_id` int UNSIGNED NOT NULL COMMENT '员工岗位',
 	PRIMARY KEY(`id`),
-	FOREIGN KEY(`post`) REFERENCES `tb_posts`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='员工表';
+	FOREIGN KEY(`post_id`) REFERENCES `tb_market_posts`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='员工表';
 
 --
 -- 转存表的数据 `tb_adminstrator`
 --
-INSERT INTO `tb_adminstrator`(`id`,`name`,`mobile`,`user_pass`,`birthday`,`sex`,`create_time`,`post`) VALUES 
-('1','GT','17862701356','e10adc3949ba59abbe56e057f20f883e','850924800','1','1522228648','1'),
-('2','aman','17862700605','e10adc3949ba59abbe56e057f20f883e','851000000','1','1522230000','2'); 
 
--- ---------------------------------------------------
+INSERT INTO `tb_adminstrator`(`id`,`name`,`mobile`,`user_pass`,`birthday`,`sex`,`create_time`,`post_id`) VALUES 
+('1','GT','17862701356','e10adc3949ba59abbe56e057f20f883e','850924800','1','1522228648','1'),
+('2','aman','17862700605','e10adc3949ba59abbe56e057f20f883e','851000000','1','1522230000','2');
 
 --
 -- 表的结构 `tb_user_level`
 --
-CREATE TABLE IF NOT EXISTS `tb_user_level`(
-	`id` int NOT NULL AUTO_INCREAMENT,
-	`name` varchar(64) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT `等级名称`,
+
+CREATE TABLE IF NOT EXISTS `tb_user_level` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '等级名称',
 	`count` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户数',
 	`status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '状态, 0:禁用，1:启用',
 	PRIMARY KEY(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='用户等级';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户等级';
 
 --
 -- 转存表的数据 `tb_user_level`
 --
-INSERT INTO `tb_user_level`(`id`,`name`,`count`,`status`) VALUES
+
+INSERT INTO `tb_user_level` (`id`,`name`,`count`,`status`) VALUES
 ('1','level 1','1','1'),
-('1','level 2','0','1'),
-('1','level 3','0','1'),
-('1','level 4','0','1'),
-('1','level 5','0','1'),
-('1','level 6','0','1'),
-('1','level 7','0','1'),
-('1','level 8','0','1'),
-('1','level 9','0','1'),
-('1','level 10','0','1');
+('2','level 2','0','1'),
+('3','level 3','0','1'),
+('4','level 4','0','1'),
+('5','level 5','0','1'),
+('6','level 6','0','1'),
+('7','level 7','0','1'),
+('8','level 8','0','1'),
+('9','level 9','0','1'),
+('10','level 10','0','1');
 
 -- ---------------------------------------------------
 
 --
 -- 表的结构 `tb_user`
 --
-CREATE TABLE IF NOT EXISTS `tb_user`(
+
+CREATE TABLE IF NOT EXISTS `tb_user` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
-	`name` char(50) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '用户实名',
+	`name` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户实名',
 	`mobile` char(11) NOT NULL DEFAULT '' COMMENT '用户登录手机号',
 	`user_pass` varchar(64) NOT NULL DEFAULT '' COMMENT '用户登录密码，cmf_password()加密',
-	`user_status` tinyint(3) NOT NULL DEFAULT '' COMMENT '用户状态, 0:禁用，1:正常, 2:未验证'
+	`user_status` tinyint(3) NOT NULL DEFAULT '2' COMMENT '用户状态, 0:禁用，1:正常, 2:未验证',
 	`user_login` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户名',
 	`user_email` varchar(100) NOT NULL DEFAULT '' COMMENT '用户登录邮箱',
 	`last_login_ip` varchar(15) NOT NULL DEFAULT '' COMMENT '最后登录ip',
@@ -78,11 +80,13 @@ CREATE TABLE IF NOT EXISTS `tb_user`(
 	`sex` tinyint(3) NOT NULL DEFAULT '0' COMMENT '性别, 0:保密, 1:男, 2:女',
 	`birthday` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '生日',
 	`user_level` int NOT NULL DEFAULT '1' COMMENT '用户等级',
-	`more` text NULL DEFAULT '' COMMENT '扩展属性',
+	`more` text COMMENT '扩展属性',
 	PRIMARY KEY(`id`),
-	UNIQUE KEY(`mobile`),(`user_login`),(`user_email`),
+	UNIQUE KEY(`mobile`),
+	UNIQUE KEY(`user_login`),
+	UNIQUE KEY(`user_email`),
 	FOREIGN KEY(`user_level`) REFERENCES `tb_user_level`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='用户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 --
 -- 表的结构 `tb_user_login_attempt`
@@ -121,8 +125,8 @@ CREATE TABLE IF NOT EXISTS `tb_verification_code` (
 	`count` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '当天已经发送成功的次数',
 	`send_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后发送成功时间',
 	`expire_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '验证码过期时间',
-	`code` varchar(8) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '最后发送成功的验证码',
-	`account` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '手机号或者邮箱',
+	`code` varchar(8) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '最后发送成功的验证码',
+	`account` varchar(100) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '手机号或者邮箱',
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='手机邮箱数字验证码表';
 

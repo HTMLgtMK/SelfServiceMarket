@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `cmf_admin_menu` (
 -- 转存表中的数据 `cmf_admin_menu`
 --
 
-INSERT INTO `cmf_admin_menu` (`id`, `parent_id`, `type`, `status`, `list_order`, `app`, `controller`, `action`, `param`, `name`, `icon`, `remark`) VALUES
+INSERT INTO `tb_admin_menu` (`id`, `parent_id`, `type`, `status`, `list_order`, `app`, `controller`, `action`, `param`, `name`, `icon`, `remark`) VALUES
 (1, 0, 0, 1, 20, 'admin', 'Plugin', 'default', '', '插件中心', 'cloud', '插件中心'),
 (2, 1, 1, 1, 10000, 'admin', 'Hook', 'index', '', '钩子管理', '', '钩子管理'),
 (3, 2, 1, 0, 10000, 'admin', 'Hook', 'plugins', '', '钩子插件管理', '', '钩子插件管理'),
@@ -192,28 +192,28 @@ INSERT INTO `cmf_admin_menu` (`id`, `parent_id`, `type`, `status`, `list_order`,
 (159, 158, 1, 0, 10000, 'user', 'AdminUserAction', 'edit', '', '编辑用户操作', '', '编辑用户操作'),
 (160, 158, 2, 0, 10000, 'user', 'AdminUserAction', 'editPost', '', '编辑用户操作提交', '', '编辑用户操作提交'),
 (161, 158, 1, 0, 10000, 'user', 'AdminUserAction', 'sync', '', '同步用户操作', '', '同步用户操作'),
-(162, 0, 0, 1, 10000, 'market', 'AdminMarket', 'default', '', '无人超市管理', '', 'th','无人超市管理'),
-(163, 162, 1, 1, 10000, 'market', 'AdminMarketPost','index','', '岗位管理', '', '岗位列表'),
+(162, 0, 0, 1, 60, 'market', 'AdminMarket', 'default', '', '无人超市管理', 'th','无人超市管理'),
+(163, 162, 1, 1, 70, 'market', 'AdminMarketPost','index','', '岗位管理', '', '岗位列表'),
 (164, 162, 1, 0, 10000, 'market', 'AdminMarketPost','add','', '添加岗位', '', '添加岗位'),
 (165, 162, 2, 0, 10000, 'market', 'AdminMarketPost','addPost','', '添加岗位提交', '', '添加岗位提交'),
 (166, 162, 1, 0, 10000, 'market', 'AdminMarketPost','edit','', '编辑岗位', '', '编辑岗位'),
 (167, 162, 2, 0, 10000, 'market', 'AdminMarketPost','editPost','', '编辑岗位提交', '', '编辑岗位提交'),
 (168, 162, 2, 0, 10000, 'market', 'AdminMarketPost','delete','', '删除岗位', '', '删除岗位'),
-(169, 162, 1, 0, 10000, 'market', 'AdminMarketSalary','index','', '薪资管理', '', '薪资列表'),
+(169, 162, 1, 0, 80, 'market', 'AdminMarketSalary','index','', '薪资管理', '', '薪资列表'),
 (170, 162, 1, 0, 10000, 'market', 'AdminMarketSalary','add','', '添加薪资', '', '添加薪资'),
 (171, 162, 2, 0, 10000, 'market', 'AdminMarketSalary','addPost','', '添加薪资提交', '', '添加薪资提交'),
 (172, 162, 1, 0, 10000, 'market', 'AdminMarketSalary','edit','', '编辑薪资', '', '编辑薪资'),
 (173, 162, 2, 0, 10000, 'market', 'AdminMarketSalary','editPost','', '编辑岗位提交', '', '编辑薪资提交'),
 (174, 162, 2, 0, 10000, 'market', 'AdminMarketPost','delete','', '删除薪资', '', '删除薪资'),
-(175, 162, 1, 0, 10000, 'market', 'AdminMarketCheckIn','index','', '签到管理', '', '签到列表'),
+(175, 162, 1, 0, 90, 'market', 'AdminMarketCheckIn','index','', '签到管理', '', '签到列表'),
 (176, 162, 1, 0, 10000, 'market', 'AdminMarketCheckIn','add','', '添加签到', '', '添加签到'),
 (177, 162, 2, 0, 10000, 'market', 'AdminMarketCheckIn','addPost','', '添加签到提交', '', '添加签到提交'),
-(178, 162, 1, 0, 10000, 'market', 'AdminMarketAccount','index','', '财务管理', '', '财务管理主页'),
+(178, 162, 1, 0, 100, 'market', 'AdminMarketAccount','index','', '财务管理', '', '财务管理主页'),
 (179, 162, 1, 0, 10000, 'market', 'AdminMarketAccount','add','', '新增出账', '', '新增出账'),
 (180, 162, 2, 0, 10000, 'market', 'AdminMarketAccount','addPost','', '新增出账提交', '', '新增出账提交'),
-(181, 162, 0, 0, 10000, 'market', 'AdminMarketPointBalance','default','', '余额与积分', '', '余额与积分管理'),
-(182, 181, 1, 0, 10000, 'market', 'AdminMarketPoint','index','', '积分管理', '', '积分管理'),
-(183, 181, 1, 0, 10000, 'market', 'AdminMarketBalance','index','', '余额管理', '', '余额管理'),
+(181, 162, 0, 0, 110, 'market', 'AdminMarketPointBalance','default','', '余额与积分', '', '余额与积分管理'),
+(182, 181, 1, 0, 120, 'market', 'AdminMarketPoint','index','', '积分管理', '', '积分管理'),
+(183, 181, 1, 0, 130, 'market', 'AdminMarketBalance','index','', '余额管理', '', '余额管理'),
 (184, 181, 2, 0, 10000, 'market', 'AdminMarketBalance','recharge','', '余额充值', '', '余额充值');
 
 -- --------------------------------------------------------
