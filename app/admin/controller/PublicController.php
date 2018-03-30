@@ -49,6 +49,12 @@ class PublicController extends AdminBaseController
         }
     }
 
+    private function isLoginByMobile($str){
+		$pattern = '/^0?([13][14][15][17][18])[0-9]{9}$/';
+		$isMatched = preg_match($pattern,$str);//可加参数$matched获取全部匹配
+		return $isMatched;
+	}
+
     /**
      * 登录验证
      */
@@ -70,40 +76,36 @@ class PublicController extends AdminBaseController
 
         $name = $this->request->param("username");
         if (empty($name)) {
-            $this->error(lang('USERNAME_OR_EMAIL_EMPTY'));
+            $this->error(lang('USERNAME_OR_MOBILE_EMPTY'));
         }
         $pass = $this->request->param("password");
         if (empty($pass)) {
             $this->error(lang('PASSWORD_REQUIRED'));
         }
-        if (strpos($name, "@") > 0) {//邮箱登陆
-            $where['user_email'] = $name;
+        if ($this->isLoginByMobile($name)) {//手机号登陆
+            $where['mobile'] = $name;
         } else {
             $where['user_login'] = $name;
         }
 
-        $result = Db::name('user')->where($where)->find();
+        $result = Db::name('adminstrator')->where($where)->find();
 
-        if (!empty($result) && $result['user_type'] == 1) {
+        //if (!empty($result) && $result['user_status'] == 1) {
+		if(!empty($result)){//查找结果非空
             if (cmf_compare_password($pass, $result['user_pass'])) {
-                $groups = Db::name('RoleUser')
-                    ->alias("a")
-                    ->join('__ROLE__ b', 'a.role_id =b.id')
-                    ->where(["user_id" => $result["id"], "status" => 1])
-                    ->value("role_id");
-                if ($result["id"] != 1 && (empty($groups) || empty($result['user_status']))) {
+                if ($result['user_status'] != 1) {// 员工已离职或者未验证
                     $this->error(lang('USE_DISABLED'));
                 }
                 //登入成功页面跳转
                 session('ADMIN_ID', $result["id"]);
                 session('name', $result["user_login"]);
-                $result['last_login_ip']   = get_client_ip(0, true);
-                $result['last_login_time'] = time();
+                //$result['last_login_ip']   = get_client_ip(0, true);//无该字段
+                //$result['last_login_time'] = time();//无该字段
                 $token                     = cmf_generate_user_token($result["id"], 'web');
                 if (!empty($token)) {
                     session('token', $token);
                 }
-                Db::name('user')->update($result);
+                //Db::name('adminstrator')->update($result);//无需更新
                 cookie("admin_username", $name, 3600 * 24 * 30);
                 session("__LOGIN_BY_CMF_ADMIN_PW__", null);
                 $this->success(lang('LOGIN_SUCCESS'), url("admin/Index/index"));

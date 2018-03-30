@@ -61,11 +61,12 @@ class Auth
         }
 
         $list   = []; //保存验证通过的规则名
-        $groups = Db::name('RoleUser')
+        $groups = Db::name('adminstrator')
             ->alias("a")
-            ->join('__ROLE__ r', 'a.role_id = r.id')
-            ->where(["a.user_id" => $uid, "r.status" => 1])
-            ->column("role_id");
+			->join('__MARKET_POSTS__ b','a.post_id = b.id')
+            ->join('__ROLE__ r', 'b.role = r.id')
+            ->where(["a.id" => $uid, "r.status" => 1])
+            ->column("r.id");
 
         if (in_array(1, $groups)) {
             return true;
@@ -113,7 +114,7 @@ class Auth
     {
         static $userInfo = [];
         if (!isset($userInfo[$uid])) {
-            $userInfo[$uid] = Db::name('user')->where(['id' => $uid])->find();
+            $userInfo[$uid] = Db::name('adminstrator')->where(['id' => $uid])->find();
         }
         return $userInfo[$uid];
     }

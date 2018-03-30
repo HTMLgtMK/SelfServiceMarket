@@ -131,9 +131,17 @@
                         <td class="td1" width="200">&nbsp;</td>
                         <td class="td1">&nbsp;</td>
                     </tr>
-                    <tr>
+		    <tr>
                         <td class="text-left">管理员帐号：</td>
-                        <td><input type="text" name="manager" value="admin" class="input"></td>
+                        <td><input type="text" name="manager_login" value="admin" class="input"
+					id="managerLogin" onblur="TestManagerLogin()"></td>
+                        <td>
+                            <div id="js-install-tip-manager_login"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">管理员实名：</td>
+                        <td><input type="text" name="manager" value="GT" class="input"></td>
                         <td>
                             <div id="js-install-tip-manager"></div>
                         </td>
@@ -162,12 +170,25 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-left">Email：</td>
-                        <td><input type="text" name="manager_email" class="input" value=""></td>
+                        <td class="text-left">Mobile：</td>
+                        <td><input type="text" name="manager_mobile" class="input" value=""></td>
                         <td>
-                            <div id="js-install-tip-manager_email"></div>
+                            <div id="js-install-tip-manager_mobile"></div>
                         </td>
                     </tr>
+		    <tr>
+                        <td class="text-left">性别：</td>
+                        <td>
+				<select name="manager_sex" >
+					<option value='1' checked='checked'>男</option>
+					<option values='2'>女</option>
+				</select>
+			</td>
+			<td>
+                            <div id="js-install-tip-manager_sex"></div>
+                        </td>
+                    </tr>
+                    <tr>
                 </table>
                 <div id="js-response-tips" style="display: none;"></div>
             </div>
@@ -219,6 +240,10 @@
             });
         }
 
+	function TestManagerLogin(){//测试是否已经存在
+		//不需测试，因为超级用户是第一个用户
+	}
+
         $(function () {
             //聚焦时默认提示
             var focus_tips = {
@@ -229,14 +254,16 @@
                 dbname: '',
                 dbprefix: '建议使用默认，同一数据库安装多个ThinkCMF时需修改',
                 dbcharset: '如果您的服务器是虚拟空间不支持uft8mb4,请选择 utf8',
-                manager: '创始人帐号，拥有站点后台所有管理权限',
+                manager_login: '创始人帐号，拥有站点后台所有管理权限',
+		manager: '创始人实名'
                 manager_pwd: '密码长度不低于6位,不高于32位',
                 manager_ckpwd: '',
                 sitename: '',
                 siteurl: '请以“/”结尾',
                 sitekeywords: '',
                 siteinfo: '',
-                manager_email: ''
+                manager_mobile: '',
+		manager_sex: ''
             };
 
             var install_form = $("#js-install-form");
@@ -264,10 +291,12 @@
                     /* dbpw: {required	: true}, */
                     dbname: {required: true},
                     dbprefix: {required: true},
+		    manager_login: {required:true, minlength: 6,maxlength: 32},
                     manager: {required: true},
                     manager_pwd: {required: true, minlength: 6, maxlength: 32},
                     manager_ckpwd: {required: true, equalTo: '#js-manager-pwd'},
-                    manager_email: {required: true, email: true}
+                    manager_mobile: {required: true, mobile: true},
+		    manager_sex: {required:true}
                 },
                 highlight: false,
                 unhighlight: function (element, errorClass, validClass) {
@@ -283,8 +312,8 @@
                     var _this = this;
                     $(element).parents('tr').removeClass('current');
 
-                    if (element.name === 'email') {
-                        //邮箱匹配点击后，延时处理
+                    if (element.name === 'mobile') {
+                        //手机匹配点击后，延时处理
                         setTimeout(function () {
                             _this.element(element);
                         }, 150);
@@ -300,10 +329,12 @@
                     dbpw: {required: '数据库密码不能为空'},
                     dbname: {required: '数据库名不能为空'},
                     dbprefix: {required: '数据库表前缀不能为空'},
-                    manager: {required: '管理员帐号不能为空'},
+                    manager_login: {required: '管理员帐号不能为空', minlength: '密码长度不低于{0}位', maxlength: '密码长度不超过{0}位'},
+		    manager: {required: '管理员实名不能为空'},
                     manager_pwd: {required: '密码不能为空', minlength: '密码长度不低于{0}位', maxlength: '密码长度不超过{0}位'},
                     manager_ckpwd: {required: '重复密码不能为空', equalTo: '两次输入的密码不一致,请重新输入.'},
-                    manager_email: {required: 'Email不能为空', email: '请输入正确的电子邮箱地址'}
+                    manager_mobile: {required: '手机号码不能为空', email: '请输入正确的电子手机号码'},
+		    manager_sex: {required:'性别需要选择'},sex: '请选择您的性别'}
                 },
                 submitHandler: function (form) {
                     form.submit();

@@ -9,6 +9,7 @@
 
 CREATE TABLE IF NOT EXISTS `tb_adminstrator` (
 	`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '员工id',
+	`user_login` varchar(64) NOT NULL DEFAULT '' COMMENT '员工登录名',
 	`name` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '员工姓名',
 	`mobile` char(11) NOT NULL COMMENT '员工登录手机号',
 	`user_pass` varchar(64) NOT NULL COMMENT '员工登录密码,cmf_password()加密',
@@ -18,16 +19,10 @@ CREATE TABLE IF NOT EXISTS `tb_adminstrator` (
 	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '入职时间',
 	`post_id` int UNSIGNED NOT NULL COMMENT '员工岗位',
 	PRIMARY KEY(`id`),
+	UNIQUE KEY(`user_login`),
+	UNIQUE KEY(`mobile`),
 	FOREIGN KEY(`post_id`) REFERENCES `tb_market_posts`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='员工表';
-
---
--- 转存表的数据 `tb_adminstrator`
---
-
-INSERT INTO `tb_adminstrator`(`id`,`name`,`mobile`,`user_pass`,`birthday`,`sex`,`create_time`,`post_id`) VALUES 
-('1','GT','17862701356','e10adc3949ba59abbe56e057f20f883e','850924800','1','1522228648','1'),
-('2','aman','17862700605','e10adc3949ba59abbe56e057f20f883e','851000000','1','1522230000','2');
 
 --
 -- 表的结构 `tb_user_level`

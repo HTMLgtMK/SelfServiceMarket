@@ -22,7 +22,7 @@ class AdminBaseController extends BaseController
         parent::_initialize();
         $session_admin_id = session('ADMIN_ID');
         if (!empty($session_admin_id)) {
-            $user = Db::name('user')->where(['id' => $session_admin_id])->find();
+            $user = Db::name('adminstrator')->where(['id' => $session_admin_id])->find();
 
             if (!$this->checkAccess($session_admin_id)) {
                 $this->error("您没有访问权限！");

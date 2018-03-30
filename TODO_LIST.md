@@ -10,6 +10,17 @@
 	tb_market_daily_checkin 需要在tb_adminstrator建立后执行
 	tb_store需要在tb_adminstrator建立后执行
 
-3. 
+3. 修改 install/controller/IndexController.class.php 中的 setSite()部分
+	由于 管理员 数据表修改啦，所以要改
+	修改install/step3页面中的管理员信息，添加项即可
+
+4. 修改BaseController.class.php 以及 AdminBaseConstroller.class.php
+	AdminBaseController.class.php  _initialize() 修改Db::name()
+
+5. 修改登录控制
+	PublicController.class.php
+	修改 \cmf\lib\Auth\check()
+
+
 
 

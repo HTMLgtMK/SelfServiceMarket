@@ -170,9 +170,11 @@ class IndexController extends Controller
             $dbConfig['hostport'] = $this->request->param('dbport');
             $dbConfig['charset']  = $this->request->param('dbcharset', 'utf8mb4');
 
-            $userLogin = $this->request->param('manager');
+	    $userLogin = $this->request->param('manager_login');
+            $userName = $this->request->param('manager');
             $userPass  = $this->request->param('manager_pwd');
-            $userEmail = $this->request->param('manager_email');
+            $userMobile = $this->request->param('manager_mobile');
+	    $userSex = $this->request->param('manager_sex');
 
             //检查密码。空 6-32字符。
             empty($userPass) && $this->error("密码不可以为空");
@@ -225,9 +227,11 @@ class IndexController extends Controller
             ]);
 
             session('install.admin_info', [
-                'user_login' => $userLogin,
+		'user_login' => $userLogin,
+                'name' => $userName,
                 'user_pass'  => $userPass,
-                'user_email' => $userEmail
+                'mobile' => $userMobile,
+		'sex' => $userSex 
             ]);
 
             return $this->fetch(":step4");
@@ -299,18 +303,24 @@ class IndexController extends Controller
             $this->error("非法安装!");
         }
 
+	//网站全局配置
         $siteInfo               = session('install.site_info');
+	// 超级管理员的配置
         $admin                  = session('install.admin_info');
-        $admin['id']            = 1;
-        $admin['user_pass']     = cmf_password($admin['user_pass']);
-        $admin['user_type']     = 1;
-        $admin['create_time']   = time();
-        $admin['user_status']   = 1;
-        $admin['user_nickname'] = $admin['user_login'];
+        $admin['id']            = 1;// 超级管理员的id固定为1
+        $admin['user_pass']     = cmf_password($admin['user_pass']);//密码加密
+        //$admin['user_type']     = 1;//无user_type字段
+        $admin['create_time']   = time();//创建时间
+        $admin['user_status']   = 1;//默认超级管理员正常
+        //$admin['user_nickname'] = $admin['user_login'];//无user_nickname字段
+	$admin['post_id']	= 1;//默认超级管理员的岗位为店主
+	
 
         try {
             cmf_set_option('site_info', $siteInfo);
-            Db::name('user')->insert($admin);
+            //Db::name('user')->insert($admin);
+	    //员工表为 tb_adminstrator,插入超级管理员
+	    Db::name('adminstrator')->insert($admin);
         } catch (\Exception $e) {
             $this->error("网站创建失败!");
         }
