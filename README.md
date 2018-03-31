@@ -4,6 +4,9 @@
 2018.03.30 16:52
 
 1. 新建了 `market` 应用模块，使的模块间更加清楚。
+	具体如下:
+	1.在 app\market 目录下 新建目录 `controller`,`lang`,`validate`, 分别存放 控制器，语言包和验证类。
+	2.在 public\themes\admin_simpleboot3 目录下 新建目录 `market`，存放market模块后台管理的View文件。
 
 2. 完成岗位管理(`market\controller\AdminMarketPostController`)，包括岗位列表(`index`)，岗位添加(`add`)，岗位编辑(`edit`)，岗位删除(`delete`)
 
