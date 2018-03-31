@@ -21,6 +21,12 @@
 	PublicController.class.php
 	修改 \cmf\lib\Auth\check()
 
+6. 管理员管理
+	修改\app\admin\controller\UserController.php 为 AdminstratorController.php
+	修改\app\admin\model\UserModel.php 为 AdminstratorModel.php
+	**注:文件内部名称也需要修改，包括 `view` 中的文件 及其 `url`**
 
-
+	明天增加管理员岗位，以及条件查询。
+	
+7. 管理员管理前，先完成角色管理以及岗位管理。。。
 

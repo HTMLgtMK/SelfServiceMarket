@@ -49,11 +49,6 @@ class PublicController extends AdminBaseController
         }
     }
 
-    private function isLoginByMobile($str){
-		$pattern = '/^0?([13][14][15][17][18])[0-9]{9}$/';
-		$isMatched = preg_match($pattern,$str);//可加参数$matched获取全部匹配
-		return $isMatched;
-	}
 
     /**
      * 登录验证
@@ -125,4 +120,12 @@ class PublicController extends AdminBaseController
         session('ADMIN_ID', null);
         return redirect(url('/', [], false, true));
     }
+
+	/**
+	* 验证是否诗手机号登录
+	*/
+    private function isLoginByMobile($str){
+		$match_nums = preg_match('/^([13]|[14]|[15]|[17]|[18])[0-9]{10}$/',$str);//可加参数$matched获取全部匹配
+		return $match_nums>0 ? true : false;
+	}
 }

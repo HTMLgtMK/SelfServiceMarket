@@ -25,9 +25,11 @@ return [
     "MALE"                               => "男",
     "GENDER_SECRECY"                     => '保密',
     "USERNAME"                           => '用户名',
+	"USER_REAL_NAME"					 => '姓名',
     "EMAIL"                              => '邮箱',
     "ROLE"                               => '角色',
     "LAST_LOGIN_TIME"                    => "最后登录时间",
+	"CREATE_TIME"						 => '创建时间',
     "LAST_LOGIN_IP"                      => '最后登录IP',
     "STATUS"                             => '状态',
     "ACTIONS"                            => "操作",
@@ -158,6 +160,9 @@ return [
     "EMAIL_ACTIVATION"                   => '邮箱激活',
     "EMAIL_SUBJECT"                      => '邮件标题',
     "EMAIL_TEMPLATE"                     => '邮件模版',
-    "EMAIL_TEMPLATE_HELP_TEXT"           => '请用{$link}代替激活链接，{$username}代替用户名'
+    "EMAIL_TEMPLATE_HELP_TEXT"           => '请用{$link}代替激活链接，{$username}代替用户名',
+	//无人超市
+	'MARKET_POST'						 => '岗位管理',
+	'MARKET_POST_ADD'					 => '添加岗位'
 ];
 

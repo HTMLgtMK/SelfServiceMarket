@@ -1,20 +1,16 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013-2018 http://www.thinkcmf.com All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: 小夏 < 449134904@qq.com>
-// +----------------------------------------------------------------------
+/*
+ * 由GT重新编辑
+ * author: ThinkCMF5 老猫
+ * time: 2018-03-30 21:00
+ */
 namespace app\admin\controller;
 
 use cmf\controller\AdminBaseController;
 use think\Db;
 
 /**
- * Class UserController
+ * Class AdminstratorController
  * @package app\admin\controller
  * @adminMenuRoot(
  *     'name'   => '管理组',
@@ -26,7 +22,7 @@ use think\Db;
  *     'remark' => '管理组'
  * )
  */
-class UserController extends AdminBaseController
+class AdminstratorController extends AdminBaseController
 {
 
     /**
@@ -44,23 +40,29 @@ class UserController extends AdminBaseController
      */
     public function index()
     {
-        $where = ["user_type" => 1];
+        $where = ["user_status" => 1];//过滤已离职和未验证
         /**搜索条件**/
         $userLogin = $this->request->param('user_login');
-        $userEmail = trim($this->request->param('user_email'));
+		$userName = $this->request->param('user_name');
+        //$userEmail = trim($this->request->param('user_email'));
+		$userMobile = trim($this->request->param('user_mobile'));
 
         if ($userLogin) {
             $where['user_login'] = ['like', "%$userLogin%"];
         }
 
-        if ($userEmail) {
-            $where['user_email'] = ['like', "%$userEmail%"];;
+		if ($userName) {
+            $where['name'] = ['like', "%$userName%"];
         }
-        $users = Db::name('user')
+
+        if ($userMobile) {
+            $where['mobile'] = ['like', "%$userMobile%"];;
+        }
+        $users = Db::name('adminstrator')
             ->where($where)
             ->order("id DESC")
             ->paginate(10);
-        $users->appends(['user_login' => $userLogin, 'user_email' => $userEmail]);
+        $users->appends(['user_login' => $userLogin,'user_name' => $userName, 'user_mobile' => $userMobile]);
         // 获取分页显示
         $page = $users->render();
 
