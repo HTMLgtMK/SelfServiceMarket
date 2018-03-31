@@ -44,36 +44,39 @@ class AdminstratorController extends AdminBaseController
         /**搜索条件**/
         $userLogin = $this->request->param('user_login');
 		$userName = $this->request->param('user_name');
-        //$userEmail = trim($this->request->param('user_email'));
 		$userMobile = trim($this->request->param('user_mobile'));
+		$userPostId = $this->request->param('post_id');
 
         if ($userLogin) {
             $where['user_login'] = ['like', "%$userLogin%"];
         }
 
 		if ($userName) {
-            $where['name'] = ['like', "%$userName%"];
+            $where['a.name'] = ['like', "%$userName%"];
         }
 
         if ($userMobile) {
             $where['mobile'] = ['like', "%$userMobile%"];;
         }
+        
+        if($userPostId){
+        	$where['a.post_id'] = ['=',"$userPostId"];
+        }
+        
         $users = Db::name('adminstrator')
+        	->alias('a')
+        	->field("a.*,b.name as post_name")
+        	->join("__MARKET_POSTS__ b",'a.post_id=b.id')
             ->where($where)
             ->order("id DESC")
             ->paginate(10);
-        $users->appends(['user_login' => $userLogin,'user_name' => $userName, 'user_mobile' => $userMobile]);
+        $users->appends(['user_login' => $userLogin,'user_name' => $userName, 'user_mobile' => $userMobile, 'post_id'=>"$userPostId"]);
         // 获取分页显示
         $page = $users->render();
 
-        $rolesSrc = Db::name('role')->select();
-        $roles    = [];
-        foreach ($rolesSrc as $r) {
-            $roleId           = $r['id'];
-            $roles["$roleId"] = $r;
-        }
+        $posts = Db::name('market_posts')->select();
         $this->assign("page", $page);
-        $this->assign("roles", $roles);
+        $this->assign("posts", $posts);
         $this->assign("users", $users);
         return $this->fetch();
     }
@@ -91,10 +94,9 @@ class AdminstratorController extends AdminBaseController
      *     'param'  => ''
      * )
      */
-    public function add()
-    {
-        $roles = Db::name('role')->where(['status' => 1])->order("id DESC")->select();
-        $this->assign("roles", $roles);
+    public function add(){
+    	$posts = Db::name('market_posts')->order("id DESC")->select();
+        $this->assign("posts", $posts);
         return $this->fetch();
     }
 
@@ -114,30 +116,38 @@ class AdminstratorController extends AdminBaseController
     public function addPost()
     {
         if ($this->request->isPost()) {
-            if (!empty($_POST['role_id']) && is_array($_POST['role_id'])) {
-                $role_ids = $_POST['role_id'];
-                unset($_POST['role_id']);
-                $result = $this->validate($this->request->param(), 'User');
+            if (!empty($_POST['post_id'])) {
+                $post_id = $_POST['post_id'];
+                unset($_POST['post_id']);
+                if($post_id == 1){
+                	$this->error("为了超市的安全，不可再创建店主！");
+                }
+                
+                $result = $this->validate($this->request->param(), 'Adminstrator');
                 if ($result !== true) {
                     $this->error($result);
                 } else {
-                    $_POST['user_pass'] = cmf_password($_POST['user_pass']);
-                    $result             = DB::name('user')->insertGetId($_POST);
+                    $data['user_login'] = $this->request->param('user_login');
+                    $data['name'] = $this->request->param('name');
+                    $data['mobile'] = $this->request->param('mobile');
+                    $data['user_pass'] = cmf_password($this->request->param('user_pass'));
+                    $data['user_status'] = "1";
+                    $data['sex'] = $this->request->param('sex');
+                    $data['create_time'] = time();
+                    $data['post_id'] = "$post_id";
+                    
+                    $result             = DB::name('Adminstrator')->insertGetId($data);
+                    
                     if ($result !== false) {
-                        //$role_user_model=M("RoleUser");
-                        foreach ($role_ids as $role_id) {
-                            if (cmf_get_current_admin_id() != 1 && $role_id == 1) {
-                                $this->error("为了网站的安全，非网站创建者不可创建超级管理员！");
-                            }
-                            Db::name('RoleUser')->insert(["role_id" => $role_id, "user_id" => $result]);
-                        }
-                        $this->success("添加成功！", url("user/index"));
+                    	//该岗位在岗人数新增1人
+                    	Db::name('market_posts')->where('id',"$post_id")->update(['count' => ['exp','count+1']]);
+                        $this->success("添加成功！", url("Adminstrator/index"));
                     } else {
                         $this->error("添加失败！");
                     }
                 }
             } else {
-                $this->error("请为此用户指定角色！");
+                $this->error("请为此用户指定岗位！");
             }
 
         }
@@ -159,13 +169,11 @@ class AdminstratorController extends AdminBaseController
     public function edit()
     {
         $id    = $this->request->param('id', 0, 'intval');
-        $roles = DB::name('role')->where(['status' => 1])->order("id DESC")->select();
-        $this->assign("roles", $roles);
-        $role_ids = DB::name('RoleUser')->where(["user_id" => $id])->column("role_id");
-        $this->assign("role_ids", $role_ids);
+        $posts = DB::name('market_posts')->order("id DESC")->select();
+        $this->assign("posts", $posts);
 
-        $user = DB::name('user')->where(["id" => $id])->find();
-        $this->assign($user);
+        $user = DB::name('adminstrator')->where(["id" => $id])->find();
+        $this->assign("user",$user);
         return $this->fetch();
     }
 
@@ -184,40 +192,41 @@ class AdminstratorController extends AdminBaseController
      */
     public function editPost()
     {
-        if ($this->request->isPost()) {
-            if (!empty($_POST['role_id']) && is_array($_POST['role_id'])) {
-                if (empty($_POST['user_pass'])) {
-                    unset($_POST['user_pass']);
-                } else {
-                    $_POST['user_pass'] = cmf_password($_POST['user_pass']);
+        if ($this->request->isPost() && !empty($_POST['id'])) {
+        	$id = $_POST['id'];
+            if (!empty($_POST['post_id'])) {
+                $post_id = $_POST['post_id'];
+                unset($_POST['post_id']);
+                if($post_id == 1){
+                	$this->error("为了超市的安全，不可再创建店主！");
                 }
-                $role_ids = $this->request->param('role_id/a');
-                unset($_POST['role_id']);
-                $result = $this->validate($this->request->param(), 'User.edit');
-
+                
+                $result = $this->validate($this->request->param(), 'Adminstrator');
                 if ($result !== true) {
-                    // 验证失败 输出错误信息
                     $this->error($result);
                 } else {
-                    $result = DB::name('user')->update($_POST);
+                    $data['user_login'] = $this->request->param('user_login');
+                    $data['name'] = $this->request->param('name');
+                    $data['mobile'] = $this->request->param('mobile');
+                    $data['user_pass'] = cmf_password($this->request->param('user_pass'));
+                    $data['user_status'] = "1";
+                    $data['sex'] = $this->request->param('sex');
+                    $data['post_id'] = "$post_id";
+                    
+                    $result             = DB::name('Adminstrator')->where('id',"$id")->update($data);
+                    
                     if ($result !== false) {
-                        $uid = $this->request->param('id', 0, 'intval');
-                        DB::name("RoleUser")->where(["user_id" => $uid])->delete();
-                        foreach ($role_ids as $role_id) {
-                            if (cmf_get_current_admin_id() != 1 && $role_id == 1) {
-                                $this->error("为了网站的安全，非网站创建者不可创建超级管理员！");
-                            }
-                            DB::name("RoleUser")->insert(["role_id" => $role_id, "user_id" => $uid]);
-                        }
-                        $this->success("保存成功！");
+                        $this->success("修改成功！", url("Adminstrator/index"));
                     } else {
-                        $this->error("保存失败！");
+                        $this->error("修改失败！");
                     }
                 }
             } else {
-                $this->error("请为此用户指定角色！");
+                $this->error("请为此用户指定岗位！");
             }
-
+        }else{
+        
+        	$this->error("1111");
         }
     }
 

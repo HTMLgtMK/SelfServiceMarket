@@ -7,39 +7,62 @@
 			<li><a href="{:url('user/add')}">{:lang('ADMIN_USER_ADD')}</a></li>
 			<li class="active"><a>编辑管理员</a></li>
 		</ul>
-		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('User/editPost')}">
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Adminstrator/editPost')}">
 			<div class="form-group">
 				<label for="input-user_login" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('USERNAME')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-user_login" name="user_login" value="{$user_login}">
+					<input type="text" class="form-control" id="input-user_login" name="user_login" value="{$user.user_login}">
 				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-user_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('USER_REAL_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-user_name" name="name" value="{$user.name}" >
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-user_mobile" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('MOBILE')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-user_mobile" name="mobile" value="{$user.mobile}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-user_sex" class="col-sm-2 control-label">
+					{:lang('SEX')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control" id="input-user_sex" name="sex">
+						<option value="1">男</option>
+						<option value="2">女</option>
+					</select>
+				</div>
+				<script>
+					var ss=document.getElementById("input-user_sex");
+					ss.value="{$user.sex}";
+				</script>
 			</div>
 			<div class="form-group">
 				<label for="input-user_pass" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('PASSWORD')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-user_pass" name="user_pass" value="" placeholder="******">
+					<input type="password" class="form-control" id="input-user_pass" name="user_pass" placeholder="请重新输入密码">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-user_email" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('EMAIL')}</label>
+				<label for="input-user_post" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('MARKET_POST')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-user_email" name="user_email" value="{$user_email}">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="input-user_email" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('ROLE')}</label>
-				<div class="col-md-6 col-sm-10">
-					<foreach name="roles" item="vo">
-						<label class="checkbox-inline">
-							<php>$role_id_checked=in_array($vo['id'],$role_ids)?"checked":"";</php>
-							<input value="{$vo.id}" type="checkbox" name="role_id[]" {$role_id_checked} <if condition="cmf_get_current_admin_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}
-						</label>
-					</foreach>
+					<select class="form-control" id="input-user_post" name="post_id">
+						<foreach name="posts" item="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+					<script>
+						var ss=document.getElementById("input-user_post");
+						ss.value="{$user.post_id}";
+					</script>
 				</div>
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<input type="hidden" name="id" value="{$id}" />
+					<input type="hidden" name="id" value="{$user.id}" />
 					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
 					<a class="btn btn-default" href="javascript:history.back(-1);">{:lang('BACK')}</a>
 				</div>
