@@ -1,6 +1,47 @@
 ## 无人超市开发日志
 
 -------------------------------------------------
+2018.04.01 17:51
+
+1. 新增 [thinkcmfapi](https://github.com/thinkcmf/thinkcmfapi)
+	覆盖项目根目录，修改 `api/user/controller/PublicController.php`。。。
+	还好上传到啦github, 不然README.md被覆盖，日志就丢掉了。
+	
+2. 基于API完成用户注册，用户登录，用户登出等功能。
+
+
+3. 完成验证码发送功能
+	1. 生成verification_code, 调用`cmf_get_verification_code($account)`
+	2. 将verification_code写入数据库, 调用 `cmf_verification_code_log($account, $code, $expireTime = 0)`
+	3. 将verification_code发送给用户
+		* 邮箱注册用户
+			1. 配置好网站的邮箱配置，注意发送用户是发送邮箱名，密码是邮箱授权码。
+			2. 安装 配置 `PHPMailer` 发送邮件，直接composer require
+			3. 调用 cmf_send_email($account,$subject,$message) 发送邮件
+		* 手机注册用户
+			直接使用`success()`的时候返回数据。。。因为手机短信验证码收费啊啊啊啊。
+			
+4. 完成用户注册功能
+	1. 使用验证器验证数据是否合法。
+	2. 检测用户名和用户帐号是否已经存在。
+	3. 检测验证码是否正确。调用`cmf_check_verification_code($account, $code, $clear = false)`
+	4. 插入新用户数据，修改`verification_code`表中的验证码。调用`cmf_clear_verification_code($account)`
+	5. 返回注册结果
+	
+5. 完成用户登录功能
+	1. 检测数据是否合法
+	2. 检测用户状态，是否正常
+	3. 匹配密码，利用 `cmf_compare_password()`
+	4. 生成token, 利用 `cmf_generate_user_token($userId,$device_Type)`生成。
+	5. 更新用户最后登录状态
+	6. 返回token以及用户信息
+
+6. 用户登出
+7. 用户密码重置
+
+**注: 这里的上传数据使用GET方法和POST方法均可。测试使为简单起使用GET方法。**
+
+-------------------------------------------------
 2018.04.01 10:54
 
 1. 编辑管理员新增修改管理员岗位

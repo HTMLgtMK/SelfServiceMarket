@@ -56,7 +56,7 @@ class MailerController extends AdminBaseController
         if (in_array('', $post) && !empty($post['smtpsecure'])) {
             $this->error("不能留空！");
         }
-
+        
         cmf_set_option('smtp_setting', $post);
 
         $this->success("保存成功！");

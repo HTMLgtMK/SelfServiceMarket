@@ -1,13 +1,9 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013-2018 http://www.thinkcmf.com All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: Powerless < wzxaini9@gmail.com>
-// +----------------------------------------------------------------------
+/**
+ * 本站用户管理
+ * author: GT base on ThinkCMF5
+ * time: 2018-04-01  12:33
+ */
 
 namespace app\user\controller;
 
@@ -66,7 +62,7 @@ class AdminIndexController extends AdminBaseController
         if (!empty($request['keyword'])) {
             $keyword = $request['keyword'];
 
-            $keywordComplex['user_login|user_nickname|user_email|mobile']    = ['like', "%$keyword%"];
+            $keywordComplex['user_login|name|user_nickname|user_email|mobile']    = ['like', "%$keyword%"];
         }
         $usersQuery = Db::name('user');
 

@@ -1341,7 +1341,7 @@ function file_exists_case($filename)
  * 生成用户 token
  * @param $userId
  * @param $deviceType
- * @return string 用户 token
+ * @return string 用户 token 或者 失败
  */
 function cmf_generate_user_token($userId, $deviceType)
 {
@@ -1352,8 +1352,9 @@ function cmf_generate_user_token($userId, $deviceType)
     $currentTime    = time();
     $expireTime     = $currentTime + 24 * 3600 * 180;
     $token          = md5(uniqid()) . md5(uniqid());
+    $result = false;
     if (empty($findUserToken)) {
-        Db::name("user_token")->insert([
+        $result = Db::name("user_token")->insert([
             'token'       => $token,
             'user_id'     => $userId,
             'expire_time' => $expireTime,
@@ -1362,7 +1363,7 @@ function cmf_generate_user_token($userId, $deviceType)
         ]);
     } else {
         if ($findUserToken['expire_time'] <= time()) {
-            Db::name("user_token")
+            $result = Db::name("user_token")
                 ->where('user_id', $userId)
                 ->where('device_type', $deviceType)
                 ->update([
@@ -1371,12 +1372,12 @@ function cmf_generate_user_token($userId, $deviceType)
                     'create_time' => $currentTime
                 ]);
         } else {
+        	$result = true;
             $token = $findUserToken['token'];
         }
 
     }
-
-    return $token;
+    return $result ? $token : $result;
 }
 
 /**
