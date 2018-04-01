@@ -41,6 +41,10 @@ return [
     "ACTIVATE_USER"                      => '启用',
     "ACTIVATE_USER_CONFIRM_MESSAGE"      => '您确定要启用此用户吗？',
     "USER_HAVE_NOT_LOGIN"                => '该用户还没登陆过',
+    "USER_STATUS_OFFPOST"				 => '离职',
+    "USER_STATUS_UNVARIFIED"			 => '未验证',
+    "OFF_POST"							 => '离职',
+    'OFF_POST_COnFIRM_MESSAGE'			 => '您确定使该员工离职!?',
     //main
     'SYSTEM_INFORMATIONS'                => '系统信息',
     'SYSTEM_NOTIFICATIONS'               => '系统通知',

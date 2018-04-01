@@ -40,13 +40,16 @@ class AdminstratorController extends AdminBaseController
      */
     public function index()
     {
-        $where = ["user_status" => 1];//过滤已离职和未验证
+        $where = [];
         /**搜索条件**/
         $userLogin = $this->request->param('user_login');
 		$userName = $this->request->param('user_name');
 		$userMobile = trim($this->request->param('user_mobile'));
 		$userPostId = $this->request->param('post_id');
-
+		$userStatus = $this->request->param('user_status','1','intval');
+		
+		$where['a.user_status'] = $userStatus;
+		
         if ($userLogin) {
             $where['user_login'] = ['like', "%$userLogin%"];
         }
@@ -149,7 +152,6 @@ class AdminstratorController extends AdminBaseController
             } else {
                 $this->error("请为此用户指定岗位！");
             }
-
         }
     }
 
@@ -195,7 +197,7 @@ class AdminstratorController extends AdminBaseController
         if ($this->request->isPost() && !empty($_POST['id'])) {
         	$id = $_POST['id'];
             if (!empty($_POST['post_id'])) {
-                $post_id = $_POST['post_id'];
+                $post_id = $_POST['post_id'];//最新岗位
                 unset($_POST['post_id']);
                 if($post_id == 1){
                 	$this->error("为了超市的安全，不可再创建店主！");
@@ -205,6 +207,10 @@ class AdminstratorController extends AdminBaseController
                 if ($result !== true) {
                     $this->error($result);
                 } else {
+                	$post_id_org = Db::name('adminstrator')->where('id',"$id")
+        							->limit(1)->column("post_id");
+        			$post_id_org = $post_id_org['0'];//获取原来的岗位id
+        			//修改的数据
                     $data['user_login'] = $this->request->param('user_login');
                     $data['name'] = $this->request->param('name');
                     $data['mobile'] = $this->request->param('mobile');
@@ -212,10 +218,13 @@ class AdminstratorController extends AdminBaseController
                     $data['user_status'] = "1";
                     $data['sex'] = $this->request->param('sex');
                     $data['post_id'] = "$post_id";
+                    $data['user_status'] = $this->request->param('user_status');
                     
                     $result             = DB::name('Adminstrator')->where('id',"$id")->update($data);
-                    
                     if ($result !== false) {
+                    	//修改在岗人数
+                    	Db::name("market_posts")->where('id',"$post_id_org")->setDec('count');
+                    	Db::name("market_posts")->where('id',"$post_id")->setInc('count');
                         $this->success("修改成功！", url("Adminstrator/index"));
                     } else {
                         $this->error("修改失败！");
@@ -299,10 +308,18 @@ class AdminstratorController extends AdminBaseController
         if ($id == 1) {
             $this->error("最高管理员不能删除！");
         }
+        
+        if(cmf_get_current_admin_id() == $id){
+        	$this->error("当前员工不能删除!");
+        }
+        
+        $post_id = Db::name('adminstrator')->where('id',"$id")->limit(1)->column('post_id');
+        $post_id = $post_id['0'];
 
-        if (Db::name('user')->delete($id) !== false) {
-            Db::name("RoleUser")->where(["user_id" => $id])->delete();
-            $this->success("删除成功！");
+        if (Db::name('adminstrator')->delete($id) !== false) {
+        	//在岗人数减1
+        	Db::name('market_posts')->where('id',"$post_id")->setDec('count',1);
+            $this->success("删除成功！",url('adminstrator/index'));
         } else {
             $this->error("删除失败！");
         }
@@ -321,13 +338,24 @@ class AdminstratorController extends AdminBaseController
      *     'param'  => ''
      * )
      */
-    public function ban()
+    public function offpost()
     {
         $id = $this->request->param('id', 0, 'intval');
         if (!empty($id)) {
-            $result = Db::name('user')->where(["id" => $id, "user_type" => 1])->setField('user_status', '0');
+        	if( $id == 1){
+        		$this->error('店主不可停用!');
+        	}
+        	if( cmf_get_current_admin_id() == $id){
+        		$this->error('当前用户不可停用!');
+        	}
+        
+            $result = Db::name('adminstrator')->where(["id" => $id, "user_status" => 1])->setField('user_status', '0');
             if ($result !== false) {
-                $this->success("管理员停用成功！", url("user/index"));
+            	//在岗人数减1
+            	$post_id = Db::name('adminstrator')->where('id',"$id")->limit(1)->column('post_id');
+            	$post_id = $post_id['0'];
+            	Db::name('market_posts')->where('id',"$post_id")->setDec('count');
+                $this->success("管理员停用成功！", url("adminstrator/index"));
             } else {
                 $this->error('管理员停用失败！');
             }
@@ -349,13 +377,17 @@ class AdminstratorController extends AdminBaseController
      *     'param'  => ''
      * )
      */
-    public function cancelBan()
+    public function activeUser()
     {
         $id = $this->request->param('id', 0, 'intval');
         if (!empty($id)) {
-            $result = Db::name('user')->where(["id" => $id, "user_type" => 1])->setField('user_status', '1');
+            $result = Db::name('adminstrator')->where('id',"$id")->setField('user_status', '1');
             if ($result !== false) {
-                $this->success("管理员启用成功！", url("user/index"));
+           		 //在岗人数加1
+            	$post_id = Db::name('adminstrator')->where('id',"$id")->limit(1)->column('post_id');
+            	$post_id = $post_id['0'];
+            	Db::name('market_posts')->where('id',"$post_id")->setInc('count');
+                $this->success("管理员启用成功！", url("adminstrator/index"));
             } else {
                 $this->error('管理员启用失败！');
             }

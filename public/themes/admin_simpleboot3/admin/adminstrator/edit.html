@@ -61,6 +61,20 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label for="input-user_status" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('STATUS')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control" id="input-user_status" name="user_status">
+						<option value="1">正常</option>
+						<option value="0">离职</option>
+						<option value="2">未验证</option>
+					</select>
+					<script>
+						var ss=document.getElementById("input-user_status");
+						ss.value="{$user.user_status}";
+					</script>
+				</div>
+			</div>
+			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<input type="hidden" name="id" value="{$user.id}" />
 					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
