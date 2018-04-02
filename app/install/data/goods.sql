@@ -64,7 +64,20 @@ CREATE TABLE IF NOT EXISTS `tb_provider_goods` (
 	FOREIGN KEY(`type_id`) REFERENCES `tb_goods_type`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='供应关系比表';
 
+--
+-- 表的结构 `tb_store_goods`
+--
 
+CREATE TABLE IF NOT EXISTS `tb_store_goods` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`store_id` int NOT NULL DEFAULT '0' COMMENT '店铺id',
+	`goods_type_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '商品类别表',
+	`count` int 	UNSIGNED NOT NULL DEFAULT '0' COMMENT '剩余商品数',
+	PRIMARY KEY(`id`),
+	FOREIGN KEY(`store_id`) REFERENCES `tb_store`(`id`),
+	FOREIGN KEY(`goods_type_id`) REFERENCES `tb_goods_type`(`id`),
+	CONSTRAINT `chk_store_goods` CHECK (`count` >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='店铺商品表';
 
 
 

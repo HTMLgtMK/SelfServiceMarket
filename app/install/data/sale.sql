@@ -52,6 +52,24 @@ CREATE TABLE IF NOT EXISTS `tb_discount_goods` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='折扣关系表';
 
 --
+-- 表的结构 `tb_cart`
+--
+
+CREATE TABLE IF NOT EXISTS `tb_cart` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`store_id` int(11) NOT NULL DEFAULT '0' COMMENT '店铺id',
+	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户id',
+	`goods_type_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '商品类别id',
+	`count` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '选购件数',
+	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+	`remark` text COMMENT '备注',
+	PRIMARY KEY(`id`),
+	FOREIGN KEY(`store_id`) REFERENCES `tb_store`(`id`),
+	FOREIGN KEY(`goods_type_id`) REFERENCES `tb_goods_type`(`id`),
+	FOREIGN KEY(`user_id`) 	REFERENCES `tb_user`(`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='购物车表';
+
+--
 -- 表的结构 `tb_sale`
 --
 

@@ -9,6 +9,17 @@
         用户ID：
         <input class="form-control" type="text" name="uid" style="width: 200px;" value="{:input('request.uid')}"
                placeholder="请输入用户ID">
+        状态:
+        <select class="form-control" id="user_status" name="user_status" style="width:200px;">
+        	<option value="1">正常</option>
+        	<option value="0">禁用</option>
+        	<option value="2">未验证</option>
+        </select>
+        <script>
+        	var ss = document.getElementById("user_status");
+        	ss.value="{:input('request.user_status/s')}";
+        </script>
+         
         关键字：
         <input class="form-control" type="text" name="keyword" style="width: 200px;" value="{:input('request.keyword')}"
                placeholder="用户名/昵称/邮箱/手机">

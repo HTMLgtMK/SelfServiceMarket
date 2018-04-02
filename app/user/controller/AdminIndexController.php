@@ -58,6 +58,9 @@ class AdminIndexController extends AdminBaseController
         if (!empty($request['uid'])) {
             $where['id'] = intval($request['uid']);
         }
+        if(isset($request['user_status'])){
+        	 $where['user_status'] = intval($request['user_status']);
+        }
         $keywordComplex = [];
         if (!empty($request['keyword'])) {
             $keyword = $request['keyword'];
@@ -92,7 +95,7 @@ class AdminIndexController extends AdminBaseController
     {
         $id = input('param.id', 0, 'intval');
         if ($id) {
-            $result = Db::name("user")->where(["id" => $id, "user_type" => 2])->setField('user_status', 0);
+            $result = Db::name("user")->where(["id" => $id, "user_status" => 1])->setField('user_status', 0);
             if ($result) {
                 $this->success("会员拉黑成功！", "adminIndex/index");
             } else {
@@ -120,7 +123,7 @@ class AdminIndexController extends AdminBaseController
     {
         $id = input('param.id', 0, 'intval');
         if ($id) {
-            Db::name("user")->where(["id" => $id, "user_type" => 2])->setField('user_status', 1);
+            Db::name("user")->where('id',"$id")->setField('user_status', 1);
             $this->success("会员启用成功！", '');
         } else {
             $this->error('数据传入失败！');
