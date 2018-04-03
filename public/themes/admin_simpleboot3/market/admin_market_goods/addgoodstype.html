@@ -1,0 +1,43 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketGoods/indexGoodsType')}">{:lang('MARKET_GOODS_TYPE')}</a></li>
+			<li class="active" ><a href="{:url('AdminMarketGoods/addGoodsType')}">{:lang('MARKET_GOODS_TYPE_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketGoods/addGoodsTypePost')}">
+			<div class="form-group">
+				<label for="input-goods-type_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('Goods_Type_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-goods-type_name" name="name">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-goods-type_price" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_PRICE')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="number" class="form-control" id="input-goods-type_price" name="price" placeholder="0">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-goods-type_address" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_ADDRESS')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-goods-type_address" name="address">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-goods-type_company" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_COMPANY')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-goods-type_company" name="company">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

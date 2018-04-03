@@ -1,0 +1,23 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketGoods/indexGoods')}">{:lang('MARKET_GOODS')}</a></li>
+			<li class="active" ><a href="{:url('AdminMarketGoods/addGoods')}">{:lang('MARKET_GOODS_ADD')}</a></li>
+		</ul>
+		<!-- 添加商品说明 -->
+		<div>
+			<h3>添加商品说明</h3>
+			<ul>
+				<li>1. 启动商品管理程序</li>
+				<li>2. 选择商品类信息</li>
+				<li>3. 启动RFID读写器, 程序会自动检测连接，并设置读写器为写入模式</li>
+				<li>4. 程序自动生成商品id，将标签放在识别范围内，点击写入按钮，返回写入状态，写入成功后，选择提交，则写入数据库中。
+			</ul>
+			<strong>注: RFID读写器每次只能写入一张标签</strong>
+		</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

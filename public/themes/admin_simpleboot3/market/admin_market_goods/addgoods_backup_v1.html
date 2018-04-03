@@ -1,0 +1,149 @@
+<include file="public@header" />
+<link rel="stylesheet" href="__STATIC__/js/comboselect/css/combo.select.css" >
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketGoods/indexGoods')}">{:lang('MARKET_GOODS_TYPE')}</a></li>
+			<li class="active" ><a href="{:url('AdminMarketGoods/addGoods')}">{:lang('MARKET_GOODS_ADD')}</a></li>
+		</ul>
+		<!-- 添加商品说明 -->
+		<div>
+			<h3>添加商品说明</h3>
+			<ul>
+				<li>1. 先选择商品类信息</li>
+				<li>2. 启动RFID读写器, 程序会自动检测连接，并设置读写器为写入模式</li>
+				<li>3. 程序自动生成商品id，将标签放在识别范围内，点击写入按钮，返回写入状态，写入成功后，选择提交，则写入数据库中。
+			</ul>
+			<strong>注: RFID读写器每次只能写入一张标签</strong>
+		</div>
+		<!-- 商品写入 -->
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketGoods/addGoodsPost')}">
+			<!-- 商品类别 -->
+			<div class="form-group">
+				<label for="input-goods-type_id" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('Goods_Type_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select id="input-goods-type_id" class="form-control">
+						<foreach name="goodsType" item="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<!-- 生产日期 -->
+			<div class="form-group">
+				<label for="input-goods-date" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_DATE')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control js-date" id="input-goods-date" name="manufacture_date" placeholder="0">
+				</div>
+			</div>
+			<!-- 生产批号 -->
+			<div class="form-group">
+				<label for="input-goods-batch_number" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_BATCH_NUMBER')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-goods-batch_number" name="batch_number">
+				</div>
+			</div>
+			<!-- id -->
+			<div class="form-group">
+				<label for="input-goods_id" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_ID')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-goods_id" name="id" disabled="true">
+					<button type="button" class="btn btn-default" onclick="getGoodsID()">获取ID</button>
+					<span id="getGoodsId-loading-img"><img src="__STATIC__/js/artDialog/skins/icons/loading.gif" href="loading" /></span>
+				</div>
+			</div>
+			
+			<!-- 写入状态面板 -->
+			<div class="form-group">
+				<div class="col-md-offset-2 col-md-6 col-sm-10" style="background:black; border-radius:10px; -moz-border-radius:10px; height:300px; overflow:scroll;">
+					<div style="width:100%; height:100%; color:white; " id="panel-write-log"></div>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="button" class="btn btn-default" onclick="writeIn()">{:lang('WRITE')}</button>
+					<button disabled="true" style="margin-left:50px;" type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script src="__STATIC__/js/comboselect/js/jquery.combo.select.js"></script>
+	<script type="text/javascript">
+		function showMsgs(str){
+			$('#panel-write-log').append(str + "<br/>");
+		}
+		
+		/* 从服务器获取商品ID */
+		function getGoodsID(){
+			var goodsType = $("#input-goods-type_id").val();
+			if(goodsType == undefined || goodsType == 0){
+				showMsgs("请先选择商品类别!");
+				return;
+			}
+			//利用ajax从服务器获取id
+			$.ajax({
+				url:  "{:url('AdminMarketGoods/getGoodsId')}",
+				type: 'post',
+				data: {
+					'goodsType': goodsType
+				},
+				dataType: 'json',
+				beforeSend: function(xhr){
+					$("#getGoodsId-loading-img").show();
+				},
+				success: function(data){
+					console.log(data);
+					$("#getGoodsId-loading-img").hide();
+					if(data.code == 1){
+						$("#input-goods_id").val(data.data.goods_id);
+						showMsgs("获取商品ID: " + data.data.goods_id);
+					}else{
+						showMsgs("获取商品ID失败22!" + data.msg);
+					}
+				},
+				error: function(data){
+					console.log(data);
+					$("#getGoodsId-loading-img").hide();
+					showMsgs("获取商品ID失败!" + data);
+				}
+			});
+		}
+		
+		/* 写入商品信息到标签 */
+		function writeIn(){
+			var goods_type = $("#input-goods-type_id").val();
+			var goods_date = $("#input-goods-date").val();
+			var batch_number = $("#input-goods-batch_number").val();
+			var goods_id = $("#input-goods_id").val();
+			
+			if(goods_type == ""){
+				showMsgs("请选择商品类别!");
+				return;
+			}
+			if(goods_date == ""){
+				showMsgs("请选择商品生产日期!");
+				return;
+			}
+			if(batch_number == ""){
+				showMsgs("请输入生产批号!");
+				return;
+			}
+			if(goods_id == ""){
+				showMsgs("请先获取商品ID!");
+				return;
+			}
+			//调用外部程序
+			
+		}
+		
+		$(document).ready(function(){
+			$("#input-goods-type_id").comboSelect();
+			$("#getGoodsId-loading-img").hide();
+		});
+		
+	</script>
+</body>
+</html>
