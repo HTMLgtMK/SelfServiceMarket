@@ -25,6 +25,20 @@ CREATE TABLE IF NOT EXISTS `tb_adminstrator` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='员工表';
 
 --
+-- 表的结构 `tb_adminstrator_token`
+--
+
+CREATE TABLE IF NOT EXISTS `tb_adminstrator_token` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`adminstrator_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '员工id',
+	`expire_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT ' 过期时间',
+	`create_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间',
+	`token` varchar(64) NOT NULL DEFAULT '' COMMENT 'token',
+	`device_type` varchar(10) NOT NULL DEFAULT '' COMMENT '设备类型;mobile,android,iphone,ipad,web,pc,mac,wxapp',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='员工客户端登录 token 表';
+
+--
 -- 表的结构 `tb_user_level`
 --
 

@@ -8,14 +8,14 @@
 // +----------------------------------------------------------------------
 namespace api\admin\controller;
 
-use cmf\controller\RestBaseController;
+use cmf\controller\RestAdminBaseController;
 use think\Db;
 use think\Validate;
 
-class PublicController extends RestBaseController
+class PublicController extends RestAdminBaseController
 {
 
-    // 用户登录 TODO 增加最后登录信息记录,如 ip
+    // 员工登录 TODO 增加最后登录信息记录,如 ip
     public function login()
     {
         $validate = new Validate([
@@ -23,7 +23,7 @@ class PublicController extends RestBaseController
             'password' => 'require'
         ]);
         $validate->message([
-            'username.require' => '请输入手机号,邮箱或用户名!',
+            'username.require' => '请输入手机号或用户名!',
             'password.require' => '请输入您的密码!'
         ]);
 
@@ -32,7 +32,10 @@ class PublicController extends RestBaseController
             $this->error($validate->getError());
         }
 
-        $userQuery = Db::name("user");
+        $userQuery = Db::name("adminstrator")
+        				->alias('a')
+        				->field("a.*,b.name as post_name")
+        				->join("__MARKET_POSTS__ b","a.post_id=b.id");
         if (Validate::is($data['username'], 'email')) {
             $userQuery = $userQuery->where('user_email', $data['username']);
         } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
@@ -44,12 +47,12 @@ class PublicController extends RestBaseController
         $findUser = $userQuery->find();
 
         if (empty($findUser)) {
-            $this->error("用户不存在!");
+            $this->error("员工不存在!");
         } else {
 
             switch ($findUser['user_status']) {
                 case 0:
-                    $this->error('您已被拉黑!');
+                    $this->error('员工已离职!');
                 case 2:
                     $this->error('账户还没有验证成功!');
             }
@@ -65,24 +68,24 @@ class PublicController extends RestBaseController
             $this->error("请求错误,未知设备!");
         }
 
-        $userTokenQuery = Db::name("user_token")
-            ->where('user_id', $findUser['id'])
-            ->where('device_type', $data['device_type']);
+        $userTokenQuery = Db::name("adminstrator_token")
+            ->where('adminstrator_id', $findUser['id'])
+            ->where('device_type', $data['device_type']);//多个客户端可登录
         $findUserToken  = $userTokenQuery->find();
         $currentTime    = time();
-        $expireTime     = $currentTime + 24 * 3600 * 180;
+        $expireTime     = $currentTime + 24 * 3600 * 1;//一天过期
         $token          = md5(uniqid()) . md5(uniqid());
         if (empty($findUserToken)) {
             $result = $userTokenQuery->insert([
                 'token'       => $token,
-                'user_id'     => $findUser['id'],
+                'adminstrator_id'     => $findUser['id'],
                 'expire_time' => $expireTime,
                 'create_time' => $currentTime,
                 'device_type' => $data['device_type']
             ]);
         } else {
             $result = $userTokenQuery
-                ->where('user_id', $findUser['id'])
+                ->where('adminstrator_id', $findUser['id'])
                 ->where('device_type', $data['device_type'])
                 ->update([
                     'token'       => $token,
@@ -96,16 +99,16 @@ class PublicController extends RestBaseController
             $this->error("登录失败!");
         }
 
-        $this->success("登录成功!", ['token' => $token]);
+        $this->success("登录成功!", ['token' => $token, 'adminstrator'=> $findUser]);
     }
 
     // 管理员退出
     public function logout()
     {
-        $userId = $this->getUserId();
-        Db::name('user_token')->where([
+        $adminstratorId = $this->getAdminstratorId();
+        Db::name('adminstrator_token')->where([
             'token'       => $this->token,
-            'user_id'     => $userId,
+            'adminstrator_Id'     => $adminstratorId,
             'device_type' => $this->deviceType
         ])->update(['token' => '']);
 
