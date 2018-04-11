@@ -6,11 +6,11 @@
  */
  
  
- namespace app\market\controller;
+namespace app\market\controller;
  
- use cmf\controller\AdminBaseController;
- use think\Db;
- use think\Validate;
+use cmf\controller\AdminBaseController;
+use think\Db;
+use think\Validate;
   
 class AdminMarketGoodsController extends AdminBaseController {
 
@@ -186,7 +186,7 @@ class AdminMarketGoodsController extends AdminBaseController {
 	 * | V | NSI |-----------------------------|
 	 * |   |     | DC | AC |     IC            |
 	 * |---------------------------------------|
-	 * | 2 |0128 | 1  | 1  |(4分类)|20(商品id) |
+	 * | 2 |0128 | 1  | 01  |(4分类)|20(商品id) |
 	 * |---------------------------------------|
 	 */
 	public function getGoodsId(){
@@ -201,13 +201,14 @@ class AdminMarketGoodsController extends AdminBaseController {
 							->limit(1)
 							->order("id DESC")
 							->column('id');
-				$id = "2012811";//v:2 NSI:0128 DC:1 AC:1
+				$id = "20128101";//v:2 NSI:0128 DC:1 AC:01
 				$id .= $this->goodsType2Str($goodsType);
 				if(empty($goods_id)){//还没有该类型商品
-					$id .= $this->generateGoodsId(0);
+					$id .= $this->generateGoodsId2('00000000000000000000');
 				}else{
-					$id_last =intval(substr($goods_id,-8));//从结尾开始截取20位
-					$id .= $this->generateGoodsId($id_last);
+					$goods_id = $goods_id['0'];
+					$id_last =substr($goods_id,-20);//从结尾开始截取20位
+					$id .= $this->generateGoodsId2($id_last);
 				}
 				$this->success("获取成功!",'',['goods_id'=>$id]);
 			}
@@ -234,6 +235,21 @@ class AdminMarketGoodsController extends AdminBaseController {
 		$str = strval($id);
 		$str = sprintf("%020s",$str);
 		return $str;
+	}
+	
+	private function generateGoodsId2(string $now){
+		$b = "00000000000000000001";
+		$len = 20;
+		$c = 0;// 进位
+		$result  = '';// 结果
+		while($len--){
+			$t1 = $now[$len];
+			$t2 = $b[$len];
+			$t = $t1 +$t2 + $c;
+			$c = intval($t)/10;
+			$result = ($t%10) . $result;
+		}
+		return $result;
 	}
 	  
 }

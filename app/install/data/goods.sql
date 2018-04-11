@@ -8,7 +8,7 @@
 
 CREATE TABLE IF NOT EXISTS `tb_goods_type` (
 	`id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
+	`name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
 	`images` text COMMENT '商品图片,以逗号隔开',
 	`price` float NOT NULL DEFAULT '0' COMMENT '商品价格',
 	`address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '生产地址',
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `tb_goods` (
 
 CREATE TABLE IF NOT EXISTS `tb_provider` (
 	`id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '供应商名称',
+	`name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '供应商名称',
 	`address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '供应商地址',
 	PRIMARY KEY(`id`),
 	UNIQUE KEY(`name`)

@@ -1,6 +1,21 @@
 ## 无人超市开发日志
 
 -------------------------------------------------
+2018.04.11 21：02
+
+1. 新增添加商品接口 `/api/market/controller/GoodsController.php`
+
+2. 新增获取商品类别接口 `/api/market/controller/GoodsTypeController.php`
+
+3. 新增获取商品ID接口 `/api/market/controller/Goods/getGoodsId`
+	修改ID生成算法，采用大数的加法算法。
+
+4. 新增添加商品ID等完整信息接口 `/api/market/controller/Goods/submit`
+	注: 没有检测ID是否会重复!
+	
+5. 新增获取商品信息接口 `/api/market/controller/Goods/getGoodsInfo`
+
+-------------------------------------------------
 2018.04.06 09:37
 
 1. 添加员工客户端登录token表
@@ -29,13 +44,13 @@
 	   |     |
 	   |     |  DC  | AC |   IC    
 	---|-----|------|----|---------
-	 2 | 0128|  1  | 1  | 4位|20位
+	 2 | 0128|  1  | 2  | 4位|20位
 	
 	说明:(十进制)
 	* V: 2 版本 1位
 	* NSI: Ecode128 编码体系 4位
 	* DC: 分区码 1位
-	* AC: 应用码 1位
+	* AC: 应用码 2位
 	* IC: 二级分类 24位
 	* IC::type: 商品分类 4位
 	* IC::id  : 商品ID 20位

@@ -8,7 +8,7 @@
 
 CREATE TABLE IF NOT EXISTS `tb_discount` (
 	`id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` char(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '折扣名',
+	`name` char(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '折扣名',
 	`extent` float NOT NULL DEFAULT '0' COMMENT '比例折扣，正小数',
 	`coin` float NOT NULL DEFAULT '0' COMMENT '现金抵扣，为负',
 	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
