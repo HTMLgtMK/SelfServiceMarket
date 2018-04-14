@@ -1,7 +1,142 @@
 ## 无人超市开发日志
 
 -------------------------------------------------
-2018.04.11 21：02
+2018.04.14 23:51
+
+今天一整天都在搞支付宝的接口，不得不吐槽php版本SDK的难用。。。不过还好终于搞定了！
+
+
+1. 先下载了官方的php sdk，这个sdk真的是恶评如潮啊！没法composer,没有namespace, 使用框架lotusphp_runtime框架。。
+	然后把`alipay-sdk-PHP.zip`解压放到`/simplewind/vendor/`目录下，修改名字为alipay。
+2. 修改lotusphp_runtime框架的部分内容:
+	1. 修改运行时目录 在`AopSdk.php`文件中，修改为如下代码:
+		```php
+		if (!defined("AOP_SDK_WORK_DIR"))
+		{
+			define("AOP_SDK_WORK_DIR", RUNTIME_PATH."/alipay/");//此处修改路径,手动创建runtime\api\alipay目录
+		}
+		```
+		修改后的alipay运行目录为:`/data/runtime/api/alipay`，需要手动创建`alipay`目录，否则会报错。
+	2. 修改`/vendor/alipay/lotusphp_runtime/shortcut.php`，修改函数名`C`为`CC`，否则会和ThinkCMF5冲突。	
+		```php
+		function CC($className)
+		{
+			return LtObjectUtil::singleton($className);
+		}
+		```
+3. 使用支付宝提供的沙箱环境，下载沙箱版支付宝。
+	**注:沙箱配置时使用的RSA2生成工具没有问题，但是在线验证公钥的正确性却始终提示"您上传的公钥校验失败，请重新上传!"。这里不要管，直接保存就好了。 **
+	由上传的RSA2公钥，支付宝会自动生成支付宝公钥，点击查看保存到本地。
+	
+	这个问题卡了好久。。。
+	
+4. 支付宝SDK的基本使用 
+	具体代码见`/api/market/controller/GoodsSaleBaseController.php` 和 `GoodsSaleController.php`。
+	1. 先引入AopSdk.php,执行会自动加载aop下的类。
+		方法:
+		```php
+		//法1 使用ThinkPHP5 提供的vendor函数
+		vendor(alipay.AopSdk);// 符号用'/'代替
+		//法2 使用require_once 引入
+		require_once VENDOR_PATH . DIRECTORY_SEPARATOR . "alipay" . DIRECTORY_SEPARATOR ."AopSdk.php";
+		```
+	2. 新建`AopClient`对象
+		**注: 这个对象可重复使用，不必在每次请求时都初始化，声明为静态变量！**
+		```php
+		self::$aop = new \AopClient();
+		self::$aop->gatewayUrl = $alipayConfig['gatewayUrl'];//支付宝网关，注意正式环境网关和沙箱的不一样，沙箱的多个dev..
+		self::$aop->appId = $alipayConfig['app_id'];//应用ID，沙箱应用会提供。
+		self::$aop->rsaPrivateKey = $alipayConfig['merchant_private_key'];//商户私钥 字符串
+		self::$aop->alipayrsaPublicKey= $alipayConfig['alipay_public_key'];//支付宝公钥 字符串
+		self::$aop->apiVersion = $alipayConfig['api_version'];
+		self::$aop->signType = $alipayConfig['sign_type'];// 签名类型 RSA (1024长度) 或 RSA2(2048长度)
+		self::$aop->postCharset= $alipayConfig['charset'];// 字符集 utf-8
+		self::$aop->notify_url = $alipayConfig['notify_url'];// 扫码付款的异步通知url地址
+		self::$aop->format= $alipayConfig['format'];//json
+		self::$aop->debugInfo=true;
+		```
+		我将alipay的配置保存到了`api/config.php`中，便于修改！
+	3. 可以新建不同种类型的对象，然后执行
+		```php
+		$result = self::$aop->execute($request);
+		```
+4. 接口参数问题
+	1. 一开始测试的参数是自己按着API文档上面写的，结果出现"参数不正确"错误。
+		然后开始排查，以为是密钥问题，又弄了好久。
+		最后下载了当面付的php demo， 把里面`f2pay/model/builder`中的类拷贝到market的model/builder中，
+		添加文件的命名空间和修改引入其他文件的方式(require -> use)。。
+	2. 最后发现`GoodsDetail`居然是array类型的，然后`GoodsDetailList`也是array类型的。。。
+		```php
+		private $goodsDetail = array();//GoodsDetail.php
+		...
+		$goodsDetailList = array($goods1Arr,$goods2Arr);//qrpay_test.php
+	```
+	3. 然后设置给`AlipayTradePrecreateContentBuilder`对象，使用`$qrPayRequestBuilder->getBizContent();`方法获取bizContent。
+		```php
+		public function getBizContent()
+		{
+			/*$this->bizContent = "{";
+			foreach ($this->bizParas as $k=>$v){
+				$this->bizContent.= "\"".$k."\":\"".$v."\",";
+			}
+			$this->bizContent = substr($this->bizContent,0,-1);
+			$this->bizContent.= "}";*/
+			if(!empty($this->bizParas)){
+				$this->bizContent = json_encode($this->bizParas,JSON_UNESCAPED_UNICODE);
+			}//仅仅是转换成json格式了而已
+			return $this->bizContent;
+		}
+		```
+	4. $aop->execute($request)方法调用后，再`AopClient.php`文件503行处，有对各个参数进行`urlencode`
+		```php
+			//系统参数放入GET请求串
+			$requestUrl = $this->gatewayUrl . "?";
+			foreach ($sysParams as $sysParamKey => $sysParamValue) {
+				$requestUrl .= "$sysParamKey=" . urlencode($this->characet($sysParamValue, $this->postCharset)) . "&";
+			}
+			$requestUrl = substr($requestUrl, 0, -1);
+		```
+
+虽然目前还没有完成前台的展示和支付状态的回调，但是后面的东西都应该不难了。
+看到 code = 10000的心情真是太好了!
+	
+2018.04.14 11:46
+
+1. nginx bug: 当使用php脚本远程访问本地另一个php页面时，会出现无响应。
+	当前使用的是项目A，但是A调用了项目B（权限系统） 但是配置的Nginx时只固定了一个9000端口 A占用后；B就无法访问
+	解决方案:
+	```
+	# nginx.conf
+	upstream fastcgi_backend {
+		server 127.0.0.1:9000;
+		server 127.0.0.1:9001;
+		server 127.0.0.1:9002;
+    }
+	server{
+		...
+		location ~ \.php$ {
+				fastcgi_pass   fastcgi_backend;
+				fastcgi_index  index.php;
+				fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+				fastcgi_split_path_info ^(.+\.php)(.*)$;
+				include        fastcgi_params;
+		}
+	}
+	```
+	参考: [BUG:upstream timed out (10060: A connection attempt failed because the connected party did not 
+			properly respond after a period of time, or established connection failed because connected ](https://www.cnblogs.com/attitudeY/p/6798956.html)
+
+-------------------------------------------------
+2018.04.13 19:19
+
+1. 修改交易数据表，修改交易详情为商品详情和支付详情，
+	添加修改时间字段和交易状态字段, 去掉商品ID字段。
+
+2. 为用户表添加默认用户id=1, 表示非vip用户。
+
+
+-------------------------------------------------
+2018.04.11 21:02
 
 1. 新增添加商品接口 `/api/market/controller/GoodsController.php`
 

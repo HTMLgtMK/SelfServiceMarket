@@ -100,6 +100,15 @@ CREATE TABLE IF NOT EXISTS `tb_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 --
+-- 转存表的数据 `tb_user`
+--
+
+INSERT INTO `tb_user`(`id`,`name`,`mobile`,`user_pass`,`user_status`,`user_login`,`user_email`,`last_login_ip`,`last_login_time`,
+			`user_activation_key`, `create_time`,`point`,`balance`,`user_nickname`,`avatar`,`sex`,`birthday`,`user_level`) VALUES
+('1','NON VIP','17862701356','111111','1','111111111111','111111111111@gt.com'
+	,'127.0.0.1','0','000000','0','0','0','non vip','','0','0','1');
+
+--
 -- 表的结构 `tb_user_login_attempt`
 --
 

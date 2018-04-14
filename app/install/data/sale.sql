@@ -75,20 +75,22 @@ CREATE TABLE IF NOT EXISTS `tb_cart` (
 
 CREATE TABLE IF NOT EXISTS `tb_sale` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
-	`goods_id` char(128) NOT NULL COMMENT '商品id',
 	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户id',
 	`store_id` int(11) NOT NULL DEFAULT '0' COMMENT '店铺id',
 	`terminal_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '终端id',
-	`pay` float NOT NULL DEFAULT '0' COMMENT '用户付款',
-	`pay_detail` text COMMENT '用户付款详情，JSON格式数据',
+	`goods_detail` text COMMENT '商品交易详情，JSON格式数据',
+	`pay_amount` float NOT NULL DEFAULT '0' COMMENT '支付金额',
+	`discount_amount` float NOT NULL DEFAULT '0' COMMENT '折扣金额',
+	`total_amount` float NOT NULL DEFAULT '0' COMMENT '总金额',
+	`pay_detail` text COMMENT '交易详情, JSON格式数据',
 	`remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '备注',
-	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '交易时间',
+	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+	`modify_time` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间',
+	`status` tinyint NOT NULL DEFAULT '1' COMMENT '交易状态, 1: 待付款, 2:超时关闭, 3:成功, 4:取消',
 	PRIMARY KEY(`id`),
-	KEY `key_store_terminal_goods_user` (`store_id`,`terminal_id`,`goods_id`,`user_id`),
 	FOREIGN KEY(`user_id`) REFERENCES `tb_user`(`id`),
 	FOREIGN KEY(`store_id`) REFERENCES `tb_store`(`id`),
-	FOREIGN KEY(`terminal_id`) REFERENCES `tb_store_terminal`(`id`),
-	FOREIGN KEY(`goods_id`) REFERENCES `tb_goods`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='销售表';
+	FOREIGN KEY(`terminal_id`) REFERENCES `tb_store_terminal`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交易表';
 
 
