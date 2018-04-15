@@ -147,7 +147,10 @@ $goodsDetailList = array($goods1Arr,$goods2Arr);
 
 $goods_detail_str = json_encode($goodsDetailList);
 
-echo json_last_error(),"</br>";
+$goods_detail_str = '[{"images":null,"address":"山东威海","batch_number":"123456","manufacture_date":1523721600,"price":20,"type_id":2,"name":"产品2","goods_id":"20128101000200000000000000000001","company":"hitwg-gt","id":2,"status":1}]';
+$goods_detail_str = base64_encode($goods_detail_str);// !important
+
+var_dump($goods_detail_str);echo "</br>";
 
 $arr = [
 	'user_id'			=> '1',
@@ -168,10 +171,10 @@ curl_setopt($ch, CURLOPT_HEADER, 0);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($arr));
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 $data = curl_exec($ch);
 echo curl_error($ch);
 curl_close($ch);
-var_dump($data);
+echo $data;
 ?>

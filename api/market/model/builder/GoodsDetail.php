@@ -6,7 +6,7 @@
  * Time: 下午2:09
  */
 
-namespace api\market\model\request;
+namespace api\market\model\builder;
  
 class GoodsDetail {
 	
