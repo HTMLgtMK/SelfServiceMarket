@@ -8,7 +8,7 @@
  * Modified by GT
  * time: 2018.04.14 21:17
  */
-namespace api\market\model\result;
+namespace api\market\model\alipay\result;
  
 class AlipayF2FPrecreateResult {
     private $tradeStatus;

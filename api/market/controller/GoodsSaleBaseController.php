@@ -17,6 +17,8 @@ class GoodsSaleBaseController extends Controller {
 	 */
 	protected static $aop;
 	
+	/*微信支付没有客户端概念*/
+	
 	protected function _initialize() {
 		if(empty(self::$aop)){
 			//require_once(VENDOR_PATH . DIRECTORY_SEPARATOR . "alipay ". DIRECTORY_SEPARATOR ."AopSdk.php");
@@ -34,5 +36,7 @@ class GoodsSaleBaseController extends Controller {
 			self::$aop->format= $alipayConfig['format'];
 			self::$aop->debugInfo=true;
 		}
+		//引入微信支付sdk
+		vendor("wxpay.lib.WxPay#Api");//vendor 中对于包含.符号的文件，将.用#符号代替，或者指定ext参数
 	}
 }

@@ -5,7 +5,7 @@
  * Date: 16/5/20
  * Time: 上午11:33
  */
-namespace api\market\model\builder;
+namespace api\market\model\alipay\builder;
  
 class RoyaltyDetailInfo
 {

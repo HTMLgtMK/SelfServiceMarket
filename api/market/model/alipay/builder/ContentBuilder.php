@@ -6,7 +6,7 @@
  * Date: 16/6/27
  * Time: 下午3:31
  */
-namespace api\market\model\builder;
+namespace api\market\model\alipay\builder;
  
 class ContentBuilder
 {

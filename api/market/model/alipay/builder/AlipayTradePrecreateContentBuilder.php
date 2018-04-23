@@ -6,12 +6,12 @@
  * Time: 下午2:09
  */
  
-namespace api\market\model\builder;
+namespace api\market\model\alipay\builder;
 
-use api\market\model\builder\GoodsDetail;
-use api\market\model\builder\ExtendParams;
-use api\market\model\builder\RoyaltyDetailInfo;
-use api\market\model\builder\ContentBuilder;
+use api\market\model\alipay\builder\GoodsDetail;
+use api\market\model\alipay\builder\ExtendParams;
+use api\market\model\alipay\builder\RoyaltyDetailInfo;
+use api\market\model\alipay\builder\ContentBuilder;
 // require_once 'GoodsDetail.php';
 // require_once 'ExtendParams.php';
 // require_once 'RoyaltyDetailInfo.php';

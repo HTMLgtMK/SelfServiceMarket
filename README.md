@@ -2,6 +2,39 @@
 
 -------------------------------------------------
 
+2018.04.23 17:06
+
+这几天没有完成什么内容，主要是添加了微信支付。
+本来以为微信支付不可以再测试了，没想到官网上面给了一个服务号的账号，但是不是自己的，所以每次的价格最多也是0.01元。。。
+
+1. 添加了微信支付sdk。/simplewind/vendor/`目录下，修改名字为wxpay。
+	1. API接口封装代码
+	* WxPay.Api.php 包括所有微信支付API接口的封装
+	* WxPay.Config.php  商户配置
+	* WxPay.Data.php   输入参数封装
+	* WxPay.Exception.php  异常类
+	* WxPay.Notify.php    回调通知基类
+
+	2. cert
+	证书存放路径，证书可以登录商户平台https://pay.weixin.qq.com/index.php/account/api_cert下载
+
+2. 正式环境使用微信支付需要开通服务号，开通服务号需要营业执照。。。微信支付没有开通沙箱环境。
+	正式使用需要修改 `wxpay/lib/WxPay.Config.php` 为自己申请的商户号的信息（配置详见说明）, 另外下载证书替换cert下的文件。
+	
+3. 修改了数据库中的与价格相关的字段类型为`int`,修改单位由`元`为`分`。
+	原因: 使用`float`或者是`double`存储金额都会表示不准确！！！
+
+4. 添加了提交订单数据的接口 `/api/market/Goods_Sale/submit`, 返回商户后台订单号。
+
+5. 添加了支付宝支付预下单和支付结果查询的接口。`/api/market/Goods_Sale/alipay_qrpay`,`/api/market/Goods_Sale/alipayQuery`。
+
+6. 添加了微信支付预下单和支付结果查询的接口。`/api/market/Goods_Sale/wxpay_qrpay`,`/api/market/Goods_Sale/wxpayQuery`。
+
+把订单数据提交和预下单分开的原因是，同时请求提交订单数据以及支付宝、微信支付的预下单会导致接口请求时间过长。
+在支付结果查询时，也有这样的问题，并且有时不能正常返回查询结果。而分开请求可以保证能正确获取得到数据，并且逻辑跟家清晰。
+
+-------------------------------------------------
+
 2018.04.15 19:25
 
 今天总算是把支付宝预下单部分搞定了。。
@@ -9,6 +42,7 @@
 1. 修改预下单提交接口，goods_detail字段由urlencode编码改成base64编码。
 	urlencode() 提交后还是会有**转义的符号！** base64编码后没有这个问题。。
 	并且，若出现 `Internal Server Error` 错误，多数也是这个部分的问题。。
+	
 2. 预下单接口中，将自定义商品详情转换成支付宝接口支持的商品详情，使用GoodsDetails类，
 	获取要使用`getGoodsDetail()`方法。否则添加的是GoodsDetail Object, json_encode后所有私有变量为空，
 	bizContent中goods_detail部分为]``[{},{}]``。支付宝接口提示"参数错误: 商品标题不能为空!"错误。
@@ -33,6 +67,7 @@
 		}
 		```
 		修改后的alipay运行目录为:`/data/runtime/api/alipay`，需要手动创建`alipay`目录，否则会报错。
+		
 	2. 修改`/vendor/alipay/lotusphp_runtime/shortcut.php`，修改函数名`C`为`CC`，否则会和ThinkCMF5冲突。	
 		```php
 		function CC($className)
@@ -40,6 +75,7 @@
 			return LtObjectUtil::singleton($className);
 		}
 		```
+		
 3. 使用支付宝提供的沙箱环境，下载沙箱版支付宝。
 	**注:沙箱配置时使用的RSA2生成工具没有问题，但是在线验证公钥的正确性却始终提示"您上传的公钥校验失败，请重新上传!"。这里不要管，直接保存就好了。 **
 	由上传的RSA2公钥，支付宝会自动生成支付宝公钥，点击查看保存到本地。
@@ -56,6 +92,7 @@
 		//法2 使用require_once 引入
 		require_once VENDOR_PATH . DIRECTORY_SEPARATOR . "alipay" . DIRECTORY_SEPARATOR ."AopSdk.php";
 		```
+		
 	2. 新建`AopClient`对象
 		**注: 这个对象可重复使用，不必在每次请求时都初始化，声明为静态变量！**
 		```php
@@ -72,10 +109,12 @@
 		self::$aop->debugInfo=true;
 		```
 		我将alipay的配置保存到了`api/config.php`中，便于修改！
+		
 	3. 可以新建不同种类型的对象，然后执行
 		```php
 		$result = self::$aop->execute($request);
 		```
+		
 4. 接口参数问题
 	1. 一开始测试的参数是自己按着API文档上面写的，结果出现"参数不正确"错误。
 		然后开始排查，以为是密钥问题，又弄了好久。

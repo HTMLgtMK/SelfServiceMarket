@@ -1,15 +1,15 @@
 <?php
 /**
- * 支付宝预下单接口测试
+ * 微信支付预下单接口测试
  * author: GT
- * time: 2018.04.23 09:16
+ * time: 2018.04.23 09:29
  */
 
 $arr = [
 	"out_trade_no" => "20180423091436907997"
 ];
 
-$url = "http://localhost:8888/api/market/Goods_Sale/alipay_qrpay";
+$url = "http://localhost:8888/api/market/Goods_Sale/wxpay_qrpay";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL,$url);

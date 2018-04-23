@@ -6,7 +6,7 @@
  * Time: 下午3:56
  */
 
-namespace api\market\model\builder;
+namespace api\market\model\alipay\builder;
  
 class ExtendParams
 {

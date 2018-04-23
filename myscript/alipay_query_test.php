@@ -1,15 +1,13 @@
 <?php
 /**
- * 支付宝预下单接口测试
+ * 支付宝 线下交易查询 测试
  * author: GT
- * time: 2018.04.23 09:16
+ * time: 2018.04.16 14:53
  */
+ 
+$url = "http://localhost:8888/api/market/Goods_Sale/alipayQuery";
 
-$arr = [
-	"out_trade_no" => "20180423091436907997"
-];
-
-$url = "http://localhost:8888/api/market/Goods_Sale/alipay_qrpay";
+$arr = ["out_trade_no"=>"121"];
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL,$url);
@@ -24,4 +22,5 @@ $data = curl_exec($ch);
 echo curl_error($ch);
 curl_close($ch);
 echo $data;
+
 ?>

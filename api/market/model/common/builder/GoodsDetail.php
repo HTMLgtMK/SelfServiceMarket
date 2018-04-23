@@ -6,7 +6,7 @@
  * Time: 下午2:09
  */
 
-namespace api\market\model\builder;
+namespace api\market\model\common\builder;
  
 class GoodsDetail {
 	
@@ -15,6 +15,9 @@ class GoodsDetail {
 
     //支付宝定义的统一商品编号
     private $alipayGoodsId;
+	
+	//微信侧商品编码 微信支付定义的统一商品编号（没有可不传）
+	private $wxpayGoodsId;
 
     // 商品名称
     private $goodsName;
@@ -69,6 +72,17 @@ class GoodsDetail {
     public function getAlipayGoodsId()
     {
         return $this->alipayGoodsId;
+    }
+	
+	 public function setWxpayGoodsId($wxpayGoodsId)
+    {
+        $this->wxpayGoodsId = $wxpayGoodsId;
+        $this->goodsDetail['wxpay_goods_id'] = $wxpayGoodsId;
+    }
+
+    public function getWxpayGoodsId()
+    {
+        return $this->wxpayGoodsId;
     }
 
     public function setGoodsName($goodsName)

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `tb_goods_type` (
 	`id` int UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
 	`images` text COMMENT '商品图片,以逗号隔开',
-	`price` float NOT NULL DEFAULT '0' COMMENT '商品价格',
+	`price` int NOT NULL DEFAULT '0' COMMENT '商品价格, 以分为单位。。',
 	`address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '生产地址',
 	`company` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '公司名称',
 	PRIMARY KEY(`id`),
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `tb_provider_goods` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`provider_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '供应商id',
 	`type_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '商品类别号',
-	`price` float NOT NULL DEFAULT '0' COMMENT '供应商商品价格',
+	`price` int NOT NULL DEFAULT '0' COMMENT '供应商商品价格, 以分为单位。。',
 	`count` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '供应总数',
 	`handover_num` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '已交付数',
 	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -78,8 +78,3 @@ CREATE TABLE IF NOT EXISTS `tb_store_goods` (
 	FOREIGN KEY(`goods_type_id`) REFERENCES `tb_goods_type`(`id`),
 	CONSTRAINT `chk_store_goods` CHECK (`count` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='店铺商品表';
-
-
-
-
-

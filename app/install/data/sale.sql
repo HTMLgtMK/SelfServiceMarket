@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `tb_discount` (
 	`id` int UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` char(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '折扣名',
 	`extent` float NOT NULL DEFAULT '0' COMMENT '比例折扣，正小数',
-	`coin` float NOT NULL DEFAULT '0' COMMENT '现金抵扣，为负',
+	`coin` int NOT NULL DEFAULT '0' COMMENT '现金抵扣，为负，以分为单位。。。',
 	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
 	`expire_time` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
 	`count` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '折扣总数',
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `tb_discount` (
 --
 
 INSERT INTO `tb_discount`(`id`,`name`,`extent`,`coin`,`create_time`, `expire_time`, `count`, `rest`, `remark`) VALUES
-('1','无折扣','1.0','0.0','1522292333','0','2147483647','2147483647','无折扣，购买不减少剩余份数');
+('1','无折扣','1.0','0','1522292333','0','2147483647','2147483647','无折扣，购买不减少剩余份数');
 
 --
 -- 折扣关系 `tb_discount_goods`
@@ -74,14 +74,14 @@ CREATE TABLE IF NOT EXISTS `tb_cart` (
 --
 
 CREATE TABLE IF NOT EXISTS `tb_sale` (
-	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`id` char(32) NOT NULL COMMENT '交易单号, 时间戳+随机字符串(16)',
 	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户id',
 	`store_id` int(11) NOT NULL DEFAULT '0' COMMENT '店铺id',
 	`terminal_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '终端id',
 	`goods_detail` text COMMENT '商品交易详情，JSON格式数据',
-	`pay_amount` float NOT NULL DEFAULT '0' COMMENT '支付金额',
-	`discount_amount` float NOT NULL DEFAULT '0' COMMENT '折扣金额',
-	`total_amount` float NOT NULL DEFAULT '0' COMMENT '总金额',
+	`pay_amount` int NOT NULL DEFAULT '0' COMMENT '支付金额, 以分为单位。。。',
+	`discount_amount` int NOT NULL DEFAULT '0' COMMENT '折扣金额, 以分为单位。。。',
+	`total_amount` int NOT NULL DEFAULT '0' COMMENT '总金额, 以分为单位。。。',
 	`pay_detail` text COMMENT '交易详情, JSON格式数据',
 	`remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '备注',
 	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -92,5 +92,3 @@ CREATE TABLE IF NOT EXISTS `tb_sale` (
 	FOREIGN KEY(`store_id`) REFERENCES `tb_store`(`id`),
 	FOREIGN KEY(`terminal_id`) REFERENCES `tb_store_terminal`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交易表';
-
-
