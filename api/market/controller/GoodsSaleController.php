@@ -17,6 +17,45 @@ use api\market\model\wxpay\NativePay;//使用example中的类
 class GoodsSaleController extends GoodsSaleBaseController {
 	
 	/**
+	 * 取消交易
+	 */
+	public function revokeDeal(){
+		if($this->request->isPost()){
+			$outTradeNo = $this->request->param("out_trade_no");
+			if(empty($outTradeNo)){
+				$this->error("请传入商户订单号!");
+			}
+			$status = Db::name("sale")->where('id',"$outTradeNo")->limit(1)->column("status");
+			if(empty($status)){
+				$this->error("交易不存在!");
+			}
+			$status = $status['0'];
+			if($status == 2 || $status == 3){
+				$this->error("交易关闭或交易成功!");
+			}
+			$arr = [
+				'status' 		=> 4,
+				'modify_time'	=> time()
+			];
+			$result = Db::name("sale")->where('id',"$outTradeNo")->update($arr);//4 取消交易
+			if(!empty($result)){
+				//改变商品的状态
+				$goods_detail = Db::name('sale')->where('id',"$outTradeNo")->limit(1)->column('goods_detail');
+				$goods_detail = json_decode($goods_detail,true);
+				foreach($goods_detail as $goods){
+					$goods_id = $goods['id'];
+					Db::name('goods')->where('id',"$goods_id")->update(['status'=>1]);//1:待售
+				}
+				$this->success("取消交易成功!");
+			}else{
+				$this->error("取消交易失败!");
+			}
+		}else{
+			$thisi->error("请求方式错误!");
+		}
+	}
+	
+	/**
 	 * 微信支付线下交易查询
 	 */
 	public function wxpayQuery(){
@@ -222,6 +261,12 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			if(empty($res)){
 				$this->error("提交订单失败!");
 			}else{
+				//将所提交的订单中的全部商品锁定:
+				$goods_detail = json_decode($data['goods_detail'],true);
+				foreach($goods_detail as $goods){
+					$goods_id = $goods['id'];
+					Db::name('goods')->where('id',"$id")->update(['status'=>"3"]);//3:锁定
+				}
 				$this->success("提交订单成功!",'' ,['out_trade_no'=>"$id"]);
 			}
 		}else{

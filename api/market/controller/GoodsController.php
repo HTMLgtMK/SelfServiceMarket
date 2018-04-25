@@ -33,7 +33,24 @@ class GoodsController extends RestAdminBaseController {
 						->find();
 			$res[] = $goods;
 		}
-		$this->success("获取商品信息成功!",["goods"=>$res]);
+		$discount = $this->getDiscounts();
+		$this->success("获取商品信息成功!",["goods"=>$res, "discount"=>$discount]);
+	}
+	
+	/*获取商品优惠信息*/
+	private function getDiscounts(){
+		$where = array(
+			'b.rest' 			=> ['gt', 0],
+			'b.create_time'		=> ['lt', time()],
+			'b.expire_time'		=> ['gt', time()]
+		);
+		$result = Db::name('discount_goods')
+						->alias('a')
+						->field('a.id, a.discount_id, a.goods_type_id, b.name, b.extent, b.coin, b.rest')
+						->join('__DISCOUNT__ b', "a.discount_id = b.id")
+						->where($where)
+						->select();
+		return $result;
 	}
 	
 	/**

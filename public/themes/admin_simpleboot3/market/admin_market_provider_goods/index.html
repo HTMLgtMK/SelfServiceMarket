@@ -1,0 +1,105 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('AdminMarketProviderGoods/index')}">{:lang('MARKET_PROVIDER_GOODS')}</a></li>
+			<li><a href="{:url('AdminMarketProviderGoods/add')}">{:lang('MARKET_PROVIDER_GOODS_ADD')}</a></li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketProviderGoods/index')}">
+            供应商:
+			<select id="select-provider_id" class="form-control" name="provider_id" >
+				<option value="0">全部</option>
+				<foreach name="providers" item="vo">
+					<option value="{$vo.id}" >{$vo.name}</option>
+				</foreach>
+			</select>
+			<script type="text/javascript" >
+				var ss_provider = document.getElementById("select-provider_id");
+				ss_provider.value = "{:input('request.provider_id/s', 0)}";
+			</script>
+			商品类别:
+			<select id="select-type_id" class="form-control" name="type_id" >
+				<option value="0">全部</option>
+				<foreach name="types" item="vo">
+					<option value="{$vo.id}" >{$vo.name}</option>
+				</foreach>
+			</select>
+			<script type="text/javascript" >
+				var ss_type = document.getElementById("select-type_id");
+				ss_type.value = "{:input('request.type_id/s',0)}";
+			</script>
+			状态:
+			<select id="select-status" class="form-control" name="status" >
+				<option value="-1">全部</option>
+				<option value="0">中断供应</option>
+				<option value="1">供应完成</option>
+				<option value="2">正常供应</option>
+			</select>
+			<script type="text/javascript" >
+				var ss_status = document.getElementById("select-status");
+				ss_status.value = "{:input('request.status/s',-1)}";
+			</script>
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('AdminMarketProviderGoods/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>{:lang('PROVIDER_NAME')}</th>
+					<th>{:lang('GOODS_TYPE_NAME')}</th>
+					<th>{:lang('GOODS_PRICE')}</th>
+					<th>{:lang('PROVIDER_GODOS_COUNT')}</th>
+					<th>{:lang('PROVIDER_GOODS_HANDOVER_NUM')}</th>
+					<th>{:lang('STATUS')}</th>
+					<th width="130">{:lang('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="provider_goods" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.provider_name}</td>
+					<td>{$vo.type_name}</td>
+					<td>{:sprintf("%.2f",$vo.price/100)}</td>
+					<td>{$vo.count}</td>
+					<td>{$vo.handover_num}</td>
+					<td>
+						<if condition='$vo.status eq 0'>
+							供应中断
+						<elseif condition='$vo.status eq 1' />
+							供应完成
+						<else />
+							正常供应
+						</if>
+					</td>
+					<!-- 操作 -->
+					<td>
+						<if condition='$vo.status eq 2 && $vo.handover_num lt $vo.count'>
+							<!-- 新建递交窗口 -->
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketProviderGoods/handover',array('id'=>$vo['id']))}','{:lang('PROVIDER_GOODS_HANDOVER')}', {width:'600px', height:'600px'});">
+								{:lang('PROVIDER_GOODS_HANDOVER')}</a>
+						<else />
+							<font style="color:#cccccc;">{:lang('PROVIDER_GOODS_HANDOVER')}</font>
+						</if>
+						<if condition='$vo.status eq 0'>
+							<a class="js-ajax-dialog-btn" href="{:url('AdminMarketProviderGoods/cancelsuspend',array('id'=>$vo['id']))}" data-msg="{:lang('PROVIDER_GODOS_COMFIRM_CANCELSUSPEND')}">{:lang('PROVIDER_GOODS_CANCELSUSPEND')}</a>
+						<elseif condition='$vo.status eq 2' />
+							<a class="js-ajax-dialog-btn" href="{:url('AdminMarketProviderGoods/suspend',array('id'=>$vo['id']))}" data-msg="{:lang('PROVIDER_GODOS_COMFIRM_SUSPEND')}">{:lang('PROVIDER_GOODS_SUSPEND')}</a>
+						</if>
+						<if condition='$vo.handover_num eq 0'>
+							<a class="js-ajax-delete" href="{:url('AdminMarketProviderGoods/delete',array('id'=>$vo['id']))}" data-msg="{:lang('PROVIDER_GODOS_COMFIRM_DELETE')}">{:lang('DELETE')}</a>
+						<else />
+							<font style="color:#cccccc;">{:lang('DELETE')}</font>
+						</if>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{//$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

@@ -3,64 +3,72 @@
 <body>
 	<div class="wrap js-check-wrap">
 		<ul class="nav nav-tabs">
-			<li class="active"><a href="{:url('AdminMarketPost/index')}">{:lang('MARKET_POST')}</a></li>
-			<li><a href="{:url('AdminMarketPost/add')}">{:lang('MARKET_POST_ADD')}</a></li>
+			<li class="active"><a href="{:url('AdminMarketSaleDiscount/index')}">{:lang('MARKET_SALE_DISCOUNT')}</a></li>
+			<li><a href="{:url('AdminMarketSaleDiscount/add')}">{:lang('MARKET_SALE_DISCOUNT_ADD')}</a></li>
 		</ul>
-        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketPost/index')}">
-            岗位名称:
-            <input type="text" class="form-control" name="post_name" style="width: 120px;" value="{:input('request.post_name/s','')}" placeholder="请输入{:lang('MARKET_POST_NAME')}">
-			薪资水平:
-            <input type="text" class="form-control" name="salary_min" style="width: 120px;" value="{:input('request.salary_min/s','')}" placeholder="{:lang('SALARY_MIN')}">
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketSaleDiscount/index')}">
+            优惠名称:
+            <input type="text" class="form-control" name="name" style="width: 120px;" value="{:input('request.name/s','')}" placeholder="请输入{:lang('DISCOUNT_NAME')}">
+			优惠比例:
+            <input type="number" class="form-control" name="extent_min" style="width: 50px;" value="{:input('request.extent_min/s','')}" placeholder="0">
 			-
-			<input type="text" class="form-control" name="salary_max" style="width: 120px;" value="{:input('request.salary_max/s','')}" placeholder="{:lang('SALARY_MIN')}">
-            工作地点:
-            <input type="text" class="form-control" name="address" style="width: 120px;" value="{:input('request.address/s','')}" placeholder="请输入{:lang('POST_ADDRESS')}">
-			角色:
-			<select id="role" class="form-control" name="role_id">
-				<option value='0'>全部</option>
-				<foreach name="roles" item='vo'>
-					<option value="{$vo.id}">{$vo.name}</option>
-				</foreach>
-			</select>
-			<php>if(empty($role_id)){ $role_id=0; }</php>
-			<script>
-				//默认选择项
-				var ss = document.getElementById("role");
-				ss.value="{:input('request.role_id/s')}";
-			</script>
-            <input type="submit" class="btn btn-primary" value="搜索" />
-            <a class="btn btn-danger" href="{:url('AdminMarketPost/index')}">清空</a>
+			<input type="number" class="form-control" name="extent_max" style="width: 50px;" value="{:input('request.extent_max/s','')}" placeholder="1">
+            优惠金额:
+			<input type="number" class="form-control" name="coin_min" style="width: 50px;" value="{:input('request.coin_min/s','')}" placeholder="-0">
+			-
+			<input type="number" class="form-control" name="coin_max" style="width: 50px;" value="{:input('request.coin_max/s','')}" placeholder="0">
+			优惠总量:
+			<input type="number" class="form-control" name="count" style="width: 80px;" value="{:input('request.count/s','')}" placeholder="请输入{:lang('DISCOUNT_COUNT')}">
+			优惠剩余:
+			<input type="number" class="form-control" name="rest" style="width: 80px;" value="{:input('request.rest/s','')}" placeholder="请输入{:lang('DISCOUNT_RSET')}">
+			开始时间:
+			<input type="text" class="form-control js-datetime" name="create_time" style="width: 120px;" value="{:input('request.create_time/s','')}" placeholder="请输入{:lang('DISCOUNT_CREATE_TIME')}">
+			过期时间:
+			<input type="text" class="form-control js-datetime" name="expire_time" style="width: 120px;" value="{:input('request.expire_time/s','')}" placeholder="请输入{:lang('DISCOUNT_EXPIRE_TIME')}">
+            
+			<input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('AdminMarketSaleDiscount/index')}">清空</a>
         </form>
 		<table class="table table-hover table-bordered">
 			<thead>
 				<tr>
 					<th width="50">ID</th>
-					<th>{:lang('MARKET_POST_NAME')}</th>
-					<th>{:lang('SALARY')}</th>
-					<th>{:lang('POST_ADDRESS')}</th>
-					<th>{:lang('POST_COUNT')}</th>
-					<th>{:lang('ROLE')}</th>	
+					<th>{:lang('DISCOUNT_NAME')}</th>
+					<th>{:lang('DISCOUNT_EXTENT')}</th>
+					<th>{:lang('DISCOUNT_COIN')}</th>
+					<th>{:lang('DISCOUNT_CREATE_TIME')}</th>
+					<th>{:lang('DISCOUNT_EXPIRE_TIME')}</th>
+					<th>{:lang('DISCOUNT_COUNT')}</th>
+					<th>{:lang('DISCOUNT_REST')}</th>					
 					<th>{:lang('REMARK')}</th>
 					<th width="130">{:lang('ACTIONS')}</th>
 				</tr>
 			</thead>
 			<tbody>
-				<foreach name="posts" item="vo">
+				<foreach name="discounts" item="vo">
 				<tr>
 					<td>{$vo.id}</td>
 					<td>{$vo.name}</td>
-					<td>{$vo.salary}</td>
-					<td>{$vo.address}</td>
+					<td>{$vo.extent}</td>
+					<td>{$vo.coin}</td>
+					<td>{:date('Y-m-d H:i', $vo.create_time)}</td>
+					<td>{:date('Y-m-d H:i', $vo.expire_time)}</td>
 					<td>{$vo.count}</td>
-					<td>{$vo.role_name}</td>
+					<td>{$vo.rest}</td>
 					<td>{$vo.remark}</td>
 					<!-- 操作 -->
 					<td>
-						<if condition="$vo['id'] eq 1 || $vo['id'] eq cmf_get_current_admin_id()">
-						<font color="#cccccc">{:lang('EDIT')}</font>  <font color="#cccccc">{:lang('DELETE')}</font><!-- 店主职位不可修改，当前员工所在职位不可修改 -->
+						<a href='{:url("AdminMarketSaleDiscountGoods/add",array("id"=>$vo["id"]))}'>{:lang('MARKET_SALE_DISCOUNT_GOODS_ADD')}</a>
+						</br>
+						<if condition="$vo['id'] eq 1">
+						<font color="#cccccc">{:lang('EDIT')}</font>  <font color="#cccccc">{:lang('DELETE')}</font><!-- id为1的优惠不可以修改 -->
 						<else />
-							<a href='{:url("AdminMarketPost/edit",array("id"=>$vo["id"]))}'>{:lang('EDIT')}</a>
-			 				<a class="js-ajax-delete" href="{:url('AdminMarketPost/delete',array('id'=>$vo['id']))}" data-msg="{:lang('DELETE_MARKET_POST_COMFIRE_MESSAGE')}">{:lang('DELETE')}</a>
+							<if condition="$vo.rest eq $vo.count" ><!-- 当前没有售出优惠可修改 -->
+								<a href='{:url("AdminMarketSaleDiscount/edit",array("id"=>$vo["id"]))}'>{:lang('EDIT')}</a>
+								<a class="js-ajax-delete" href="{:url('AdminMarketSaleDiscount/delete',array('id'=>$vo['id']))}" data-msg="{:lang('DISCOUNT_DELETE_CONFIRM_MSG')}">{:lang('DELETE')}</a>
+							<else />
+								<font color="#cccccc">{:lang('EDIT')}</font>
+								<font color="#cccccc">{:lang('DELETE')}</font>
 							</if>
 						</if>
 					</td>

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `tb_goods` (
 	`type_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '商品类别号',
 	`manufacture_date` int(11) NOT NULL DEFAULT '0' COMMENT '生产日期',
 	`batch_number` char(255) NOT NULL DEFAULT '0' COMMENT '生产批号',
-	`status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '状态, 1:待售, 2:已售',
+	`status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '状态, 1:待售, 2:已售, 3:被锁定',
 	PRIMARY KEY(`id`),
 	FOREIGN KEY(`type_id`) REFERENCES `tb_goods_type`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品表';

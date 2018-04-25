@@ -1,0 +1,66 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<form method="post" class="form-horizontal js-ajax-form" action="{:url('AdminMarketProviderGoods/handover')}">
+			<input type="hidden" name="id" value="{$provider_goods.id}" />
+			<div class="form-group">
+				<label for="input-provider_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('PROVIDER_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" disabled="disabled" class="form-control" id="input-provider_name" value="{$provider_goods.provider_name}">
+				</div>
+			</div>
+            <div class="form-group">
+                <label for="input-goods_type" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('MARKET_GOODS_TYPE')}</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="text" disabled="disabled" class="form-control" id="input-goods_type" value="{$provider_goods.type_name}" >
+                </div>
+            </div>
+			<div class="form-group">
+                <label for="input-provider_goods_status" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('STATUS')}</label>
+                <div class="col-md-6 col-sm-10">
+                    <select disabled="disabled" class="form-control" id="input-provider_goods_status" >
+						<option value="0">供应中断</option>
+						<option value="1">供应结束</option>
+						<option value="2">正常供应</option>
+					</select>
+					<script type="text/javascript" >
+						var ss = document.getElementById("input-provider_goods_status");
+						ss.value="{$provider_goods.status}";
+					</script>
+                </div>
+            </div>
+			 <div class="form-group">
+                <label for="input-provider_goods_price" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_PRICE')}</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="number" disabled="disabled" class="form-control" id="input-provider_goods_price" value="{$provider_goods.price}"></input>
+                </div>
+            </div>
+			<div class="form-group">
+                <label for="input-provider_goods_count" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('PROVIDER_GODOS_COUNT')}</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="number" disabled="disabled" class="form-control" id="input-provider_goods_count" placeholder="0" value="{$provider_goods.count}"></input>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-provider_goods_handover_num1" class="col-sm-2 control-label"><span class="form-required">*</span>已{:lang('PROVIDER_GOODS_HANDOVER_NUM')}</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="number" disabled="disabled" class="form-control" id="input-provider_goods_handover_num1" placeholder="0" value="{$provider_goods.handover_num}"></input>
+                </div>
+            </div>
+			<div class="form-group">
+                <label for="input-provider_goods_handover_num" class="col-sm-2 control-label"><span class="form-required">*</span>本次{:lang('PROVIDER_GOODS_HANDOVER_NUM')}</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="number" class="form-control" id="input-provider_goods_handover_num" placeholder="0" name="handover_num"></input>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary js-ajax-submit">{:lang('PROVIDER_GOODS_HANDOVER')}</button>
+                </div>
+            </div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

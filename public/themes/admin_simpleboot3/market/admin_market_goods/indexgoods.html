@@ -47,7 +47,7 @@
 				<tr>
 					<td>{$vo.id}</td>
 					<td>{$vo.name}</td>
-					<td>{$vo.price}</td>
+					<td>{:sprintf("%.2f", $vo.price/100)}</td>
 					<td>{:date('y-m-d', $vo.manufacture_date)}</td>
 					<td>{$vo.batch_number}</td>
 					<td>
@@ -59,8 +59,13 @@
 					</td>
 					<!-- 操作 -->
 					<td>
+						<if condition="$vo['status'] eq 1" />
 						<a href="{:url('AdminMarketGoods/editGoods',array('id'=>$vo['id']))}">{:lang('EDIT')}</a>
 			 			<a class="js-ajax-delete" href="{:url('AdminMarketGoods/deleteGoods',array('id'=>$vo['id']))}" data-msg="{:lang('DELETE_GOODS_COMFIRE_MESSAGE')}">{:lang('GOODS_DELETE')}</a>
+						<else/>
+						<span style="color:gray;">{:lang('EDIT')}</span>&nbsp;
+						<span style="color:gray;">{:lang('GOODS_DELETE')}</span>
+						</if>
 					</td>
 				</tr>
 				</foreach>

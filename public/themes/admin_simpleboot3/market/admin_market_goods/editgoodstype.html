@@ -3,58 +3,39 @@
 <body>
 	<div class="wrap">
 		<ul class="nav nav-tabs">
-			<li><a href="{:url('AdminMarketPost/index')}">{:lang('MARKET_POST')}</a></li>
-			<li><a href="{:url('AdminMarketPost/add')}">{:lang('MARKET_POST_ADD')}</a></li>
-			<li class="active"><a>编辑岗位</a></li>
+			<li><a href="{:url('AdminMarketGoods/indexGoodsType')}">{:lang('MARKET_GOODS_TYPE')}</a></li>
+			<li><a href="{:url('AdminMarketGoods/addGoodsType')}">{:lang('MARKET_GOODS_TYPE_ADD')}</a></li>
+			<li class="active" ><a href="#">{:lang('MARKET_GOODS_TYPE_EDIT')}</a></li>
 		</ul>
-		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketPost/editPost')}">
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketGoods/editGoodsTypePost')}">
+			<input type="hidden" name="id" value="{$type.id}" />
 			<div class="form-group">
-				<label for="input-post_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('MARKET_POST_NAME')}</label>
+				<label for="input-goods-type_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('Goods_Type_NAME')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-post_name" name="name" value="{$post.name}">
+					<input type="text" class="form-control" id="input-goods-type_name" name="name" value="{$type.name}">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_salary" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('SALARY')}</label>
+				<label for="input-goods-type_price" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_PRICE')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="number" class="form-control" id="input-post_salary" name="salary" value="{$post.salary}" placeholder="0">
+					<input type="number" class="form-control" id="input-goods-type_price" name="price" placeholder="0" value="{$type.price}">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_address" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('POST_ADDRESS')}</label>
+				<label for="input-goods-type_address" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_ADDRESS')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-post_address" name="address" value="{$post.address}">
+					<input type="text" class="form-control" id="input-goods-type_address" name="address" value="{$type.address}">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_count" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('POST_COUNT')}</label>
+				<label for="input-goods-type_company" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_COMPANY')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="number" class="form-control" id="input-post_count" name="count" value="{$post.count}">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="input-post_remark" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('REMARK')}</label>
-				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-post_remark" name="remark" value="{$post.remark}">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="input-post_remark" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('ROLE')}</label>
-				<div class="col-md-6 col-sm-10">
-					<foreach name="roles" item="vo">
-						<label class="radio-inline">
-							<input value="{$vo.id}" type="radio" name="role"
-								<if condition="$vo['id'] eq $post['role']">checked="checked"</if>>
-								{$vo.name}
-						</label>
-					</foreach>
+					<input type="text" class="form-control" id="input-goods-type_company" name="company" value="{$type.company}">
 				</div>
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<input type="hidden" name="id" value="{$post.id}" />
-					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
-					<a class="btn btn-default" href="javascript:history.back(-1);">{:lang('BACK')}</a>
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('EDIT')}</button>
 				</div>
 			</div>
 		</form>

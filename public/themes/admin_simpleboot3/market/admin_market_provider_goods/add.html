@@ -1,0 +1,76 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketProviderGoods/index')}">{:lang('MARKET_PROVIDER_GOODS')}</a></li>
+			<li class="active"><a href="{:url('AdminMarketProviderGoods/add')}">
+				{:lang('MARKET_PROVIDER_GOODS_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketProviderGoods/addPost')}">
+			<div class="form-group">
+				<label for="input-provider_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('PROVIDER_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select id="input-provider_name" class="form-control" name="provider_id">
+						<foreach name="providers" item="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-type_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_TYPE_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select id="input-type_name" class="form-control" name="type_id">
+						<foreach name="types" item="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-provider-goods_price" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_PRICE')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input id="input-provider-goods_price" type="number" class="form-control" name="price" placeholder="0" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-provider-goods_count" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('PROVIDER_GODOS_COUNT')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input id="input-provider-goods_count" type="number" class="form-control" name="count" placeholder="0" />
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var map_type = new Map();
+			<foreach name="types" item="vo">
+				map_type.set("{$vo.id}","{$vo.price}");
+			</foreach>
+			//为商品类别选择添加监听器
+			$("#input-type_name").change(function(){
+				var key = $("#input-type_name").val();
+				var price = map_type.get(key);
+				$("#input-provider-goods_price").val(price);
+			});
+			//设置默认的价格为选中的第一个选项价格
+			var default_price = 0;
+			var default_type = 1;
+			for(var [key,value] of map_type){
+				default_price = value;
+				default_type = key;
+				break;
+			}
+			$("#input-type_name").val(default_type);
+			$("#input-provider-goods_price").val(default_price);
+		});
+	</script>
+</body>
+</html>

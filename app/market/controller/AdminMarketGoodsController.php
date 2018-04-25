@@ -102,6 +102,73 @@ class AdminMarketGoodsController extends AdminBaseController {
 	 	}//isPost()
 	 }
 	 
+	 /**
+	  * 编辑商品类别
+	  */
+	 public function editGoodsType(){
+		 $type_id = $this->request->param("id");
+		 $type = Db::name('goods_type')->where("id","$type_id")->find();
+		 $this->assign("type",$type);
+		 return $this->fetch();
+	 }
+	 
+	 /**
+	  * 编辑商品类别提交
+	  */
+	 public function editGoodsTypePost(){
+		 if($this->request->isPost()){
+			 $data = $this->request->param();
+	 		//验证提交的数据
+	 		$validate = new Validate([
+				'id'		=> "require",
+	 			'name' 		=> "require",
+	 			'price' 	=> "require",
+	 			'address' 	=> "require",
+	 			'company' 	=> "require"
+	 		]);
+	 		
+	 		$validate->message([
+				'id.require'	=> "请传入商品类别ID",
+	 			'name.require' 	=> "请输入商品名!",
+	 			'price.require' => "请输入价格!",
+	 			'address.require' 	=> '请输入生产地址!',
+	 			'company.require'	=> '请输入生产公司!'
+	 		]);
+	 		
+	 		if(!$validate->check($data)){
+	 			$this->error($validate->getError());
+	 		}
+			
+			$result = Db::name('goods_type')->update($data);
+			if($result){
+				$this->success("修改商品类别成功!",url('AdminMarketGoods/indexGoodsType'));
+			}else{
+				$this->error("修改商品类别失败!");
+			}
+		 }
+	 }
+	 
+	 /**
+	  * 删除商品类别
+	  */
+	 public function deleteGoodsType(){
+		 $type_id = $this->request->param('id');
+		 if(empty($type_id)){
+			 $this->error("请传入商品类别ID!");
+		 }
+		 $count = Db::name('goods')->where('type_id',"$type_id")->count();
+		 if($count == 0){
+			 $result = Db::name('goods_type')->where("id","$type_id")->delete();
+			 if($result){
+				 $this->success("删除商品类别成功!");
+			 }else{
+				 $this->error("删除商品类别失败!");
+			 }
+		 }else{
+			 $this->error("该类别下含有商品，不可删除!");
+		 }
+	 }
+	 
 	 /*********************************************************
 	  * 商品管理
 	  *********************************************************/
@@ -166,7 +233,6 @@ class AdminMarketGoodsController extends AdminBaseController {
 		return $this->fetch();
 		
 	}
-	
 	
 	/**
 	 * 添加商品
@@ -251,5 +317,82 @@ class AdminMarketGoodsController extends AdminBaseController {
 		}
 		return $result;
 	}
-	  
+	
+	/**
+	 * 商品下架
+	 * @param id 商品id
+	 */
+	public function deleteGoods(){
+		$goods_id = $this->request->param('id');
+		if(!empty($goods_id)){
+			$status = Db::name("goods")->where('id',"$goods_id")->limit(1)->column('status');
+			if(!empty($status)){
+				$status = $status['0'];
+				if($status == 1){
+					$result = Db::name('goods')->where('id',"$goods_id")->delete();
+					if($result){
+						$this->success("下架成功!");
+					}else{
+						$this->error("下架失败!");
+					}
+				}else{//已售
+					$this->error("该商品已售 或 被锁定，不可下架!");
+				}
+			}else{
+				$this->error("商品不存在!");
+			}
+		}else{
+			$this->error("请传入商品ID!");
+		}
+	}
+	
+	/**
+	 * 编辑商品
+	 */
+	public function editGoods(){
+		$goods_id = $this->request->param('id');
+		$goods = Db::name('goods')->where('id',"$goods_id")->find();
+		if($goods['status'] != 1){
+			return $this->error("商品已售或被锁定，不可修改!");
+		}
+		$goods_type = Db::name('goods_type')->select();
+		$this->assign("types", $goods_type);
+		$this->assign("goods", $goods);
+		return $this->fetch();
+	}
+	
+	/**
+	 * 编辑商品提交
+	 */
+	public function editGoodsPost(){
+		if($this->request->isPost()){
+			$validate = new Validate([
+				'id' 			=> "require",
+				'type_id'		=> "require",
+				"manufacture_date"	=> "require",
+				"batch_number"	=> "require",
+			]);
+			$validate->message([
+				"id.require"			=> "请指定商品ID",
+				"type_id.require"		=> "请指定商品类别",
+				"manufacture_date.require"	=> "请输入生产日期",
+				"batch_number.require"	=> "请输入生产批号"		
+			]);
+			$data = $this->request->param();
+			if(!$validate->check($data)){
+				$this->error($validate->getError());
+			}
+			$data['manufacture_date'] = strtotime($data['manufacture_date']);
+			if(array_key_exists("status",$data)){
+				$data['status'] = 1;
+			}
+			
+			$result = Db::name('goods')->update($data);
+			if($result){
+				$this->success("修改成功!", url('AdminMarketGoods/indexGoods'));
+			}else{
+				$this->error("修改失败!");
+			}
+		}
+	}
 }

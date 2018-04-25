@@ -3,44 +3,51 @@
 <body>
 	<div class="wrap">
 		<ul class="nav nav-tabs">
-			<li><a href="{:url('AdminMarketPost/index')}">{:lang('MARKET_POST')}</a></li>
-			<li class="active"><a href="{:url('AdminMarketPost/add')}">
-				{:lang('MARKET_POST_ADD')}</a></li>
+			<li><a href="{:url('AdminMarketSaleDiscount/index')}">{:lang('MARKET_SALE_DISCOUNT')}</a></li>
+			<li class="active"><a href="{:url('AdminMarketSaleDiscount/add')}">
+				{:lang('MARKET_SALE_DISCOUNT_ADD')}</a></li>
 		</ul>
-		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketPost/addPost')}">
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketSaleDiscount/addPost')}">
 			<div class="form-group">
-				<label for="input-post_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('MARKET_POST_NAME')}</label>
+				<label for="input-discount_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('DISCOUNT_NAME')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-post_name" name="post_name">
+					<input type="text" class="form-control" id="input-discount_name" name="name">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_salary" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('SALARY')}</label>
+				<label for="input-discount_extent" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('DISCOUNT_EXTENT')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="number" class="form-control" id="input-post_salary" name="post_salary" placeholder="0">
+					<input type="number" class="form-control" id="input-discount_extent" name="extent" placeholder="1" value="1">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_address" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('POST_ADDRESS')}</label>
+				<label for="input-discount_coin" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('DISCOUNT_COIN')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-post_address" name="post_address">
+					<input type="number" class="form-control" id="input-discount_coin" name="coin" value="0"> <span>优惠金额为负!</span>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_remark" class="col-sm-2 control-label">
-					{:lang('REMARK')}</label>
+				<label for="input-discount_count" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('DISCOUNT_COUNT')}</label>
 				<div class="col-md-6 col-sm-10">
-					<input type="text" class="form-control" id="input-post_remark" name="remark" value="备注">
+					<input type="number" class="form-control" id="input-discount_count" name="count"> <span>2147483647为不限量!</span>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-post_address" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('ROLE')}</label>
+				<label for="input-discount_expire_timer" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('DISCOUNT_CREATE_TIME')}</label>
 				<div class="col-md-6 col-sm-10">
-					<foreach name="roles" item="vo">
-						<label class="radio-inline">
-							<input value="{$vo.id}" type="radio" name="role_id" <if condition="cmf_get_current_admin_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}
-						</label>
-					</foreach>
+					<input type="text" class="form-control js-datetime" id="input-discount_create_timer" name="create_time">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-discount_expire_timer" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('DISCOUNT_EXPIRE_TIME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control js-datetime" id="input-discount_expire_timer" name="expire_time">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-discount_remark" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('REMARK')}</label>
+				<div class="col-md-6 col-sm-10">
+					<textarea class="form-control" id="input-discount_remark" name="remark"></textarea>
 				</div>
 			</div>
 			<div class="form-group">

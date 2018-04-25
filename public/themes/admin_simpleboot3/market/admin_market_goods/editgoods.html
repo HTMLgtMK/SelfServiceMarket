@@ -1,0 +1,48 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketGoods/indexGoodsType')}">{:lang('MARKET_GOODS')}</a></li>
+			<li><a href="{:url('AdminMarketGoods/addGoodsType')}">{:lang('MARKET_GOODS_ADD')}</a></li>
+			<li class="active" ><a href="#">{:lang('MARKET_GOODS_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketGoods/editGoodsPost')}">
+			<input type="hidden" name="id" value="{$goods.id}" />
+			<input type="hidden" name="status" value="{$goods.status}" />
+			<div class="form-group">
+				<label for="input-goods_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('MARKET_GOODS_TYPE')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select id="input-goods_name" class="form-control" name="type_id">
+						<foreach name="types" item="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+					<script type="text/javascript">
+						var select = document.getElementById("input-goods_name");
+						select.value = "{$goods.type_id}";
+					</script>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-goods_date" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_DATE')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control js-date" id="input-goods_date" name="manufacture_date" placeholder="0" value="{:date('Y-m-d', $goods.manufacture_date)}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-goods_batch_number" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('GOODS_BATCH_NUMBER')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-goods_batch_number" name="batch_number" value="{$goods.batch_number}">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('EDIT')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

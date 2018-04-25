@@ -41,7 +41,7 @@
 					<td>
 						<img src="{$images['0']}" href="" />
 					</td>
-					<td>{$vo.price}</td>
+					<td>{:sprintf("%.2f", $vo.price/100)}</td>
 					<td>{$vo.address}</td>
 					<td>{$vo.company}</td>
 					<!-- 操作 -->

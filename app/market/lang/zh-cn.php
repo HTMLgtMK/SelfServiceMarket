@@ -22,6 +22,7 @@ return [
 	/*商品类别*/
 	'MARKET_GOODS_TYPE'					 => '商品类别',
 	'MARKET_GOODS_TYPE_ADD'				 => '添加商品类',
+	'MARKET_GOODS_TYPE_EDIT'			 => '编辑商品类别',
 	'GOODS_TYPE_NAME'					 => '商品类名称',
 	'GOODS_PRICE' 						 => '商品价格',
 	'GOODS_PRICE_MIN'					 => '最低价格',
@@ -33,6 +34,7 @@ return [
 	/*商品管理*/
 	'MARKET_GOODS' 						 => '商品管理',
 	'MARkET_GOODS_ADD' 					 => '添加商品',
+	'MARKET_GOODS_EDIT'					 => '编辑商品',
 	'GOODS_NAME' 						 => '商品名称',
 	'GOODS_BATCH_NUMBER'				 => '生产批号',
 	'GOODS_DATE'						 => '生产日期',
@@ -41,5 +43,36 @@ return [
 	'GOODS_DELETE'						 => '下架',
 	'DELETE_GOODS_COMFIRE_MESSAGE'  	 => '确定下架商品?',
 	'GOODS_ID'							 => '商品ID',
-	
+	/*供应商管理*/
+	'MARKET_PROVIDER'					 => '供应商管理',
+	'MARKET_PROVIDER_ADD'				 => '添加供应商',
+	'MARKET_PROVIDER_EDIT'				 => '编辑供应商',
+	'PROVIDER_NAME'						 => '供应商名称',
+	'PROVIDER_ADDRESS'					 => '供应商地址',
+	'DELETE_PROVIDER_COMFIRE_MESSAGE' 	 => '确定删除供应商?',
+	/*供应商品管理*/
+	'MARKET_PROVIDER_GOODS'				 => '供应商品管理',
+	'MARKET_PROVIDER_GOODS_ADD'			 => '添加供应商品',
+	'PROVIDER_GOODS_HANDOVER'		 	 => '递交',
+	'PROVIDER_GOODS_SUSPEND'			 => '中断',
+	'PROVIDER_GOODS_CANCELSUSPEND'		 => '供应',
+	'PROVIDER_GODOS_COUNT'				 => '供应总量',
+	'PROVIDER_GOODS_HANDOVER_NUM'		 => '递交量',
+	'PROVIDER_GODOS_COMFIRM_CANCELSUSPEND' => '确定继续供应?',
+	'PROVIDER_GODOS_COMFIRM_SUSPEND' 	 => '确定中断供应?',
+	'PROVIDER_GODOS_COMFIRM_DELETE'		 => '确定删除供应商品?',
+	/*优惠管理*/
+	'MARKET_SALE_DISCOUNT'				 => '优惠管理',
+	'MARKET_SALE_DISCOUNT_ADD'			 => '添加优惠',
+	'MARKET_SALE_DISCOUNT_EDIT'			 => '编辑优惠',
+	'DISCOUNT_NAME'						 => '优惠名称',
+	'DISCOUNT_EXTENT'					 => '优惠比例',
+	'DISCOUNT_COIN'						 => '优惠金额',
+	'DISCOUNT_CREATE_TIME'				 => '开始时间',
+	'DISCOUNT_EXPIRE_TIME'				 => '过期时间',
+	'DISCOUNT_COUNT'					 => '优惠总数',
+	'DISCOUNT_REST'						 => '剩余数量',
+	'DISCOUNT_DELETE_CONFIRM_MSG'		 => '确定删除此优惠?',
+	'MARKET_SALE_DISCOUNT_GOODS_ADD'	 => '添加优惠商品',
+	'MARKET_DISCOUNT_GOODS'				 => '优惠商品',
 ];

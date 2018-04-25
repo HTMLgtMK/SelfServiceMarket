@@ -1,0 +1,43 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('AdminMarketProvider/index')}">{:lang('MARKET_PROVIDER')}</a></li>
+			<li><a href="{:url('AdminMarketProvider/add')}">{:lang('MARKET_PROVIDER_ADD')}</a></li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketProvider/index')}">
+            关键字:
+            <input type="text" class="form-control" name="keyword" style="width: 150px;" value="{:input('request.keyword/s','')}" placeholder="请输入{:lang('KEYWORDS')}">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('AdminMarketProvider/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>{:lang('PROVIDER_NAME')}</th>
+					<th>{:lang('PROVIDER_ADDRESS')}</th>
+					<th width="130">{:lang('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="providers" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.name}</td>
+					<td>{$vo.address}</td>
+					<!-- 操作 -->
+					<td>
+						<a href='{:url("AdminMarketProvider/edit",array("id"=>$vo["id"]))}'>{:lang('EDIT')}</a>
+			 			<a class="js-ajax-delete" href="{:url('AdminMarketProvider/delete',array('id'=>$vo['id']))}" data-msg="{:lang('DELETE_PROVIDER_COMFIRE_MESSAGE')}">{:lang('DELETE')}</a>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{//$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>
