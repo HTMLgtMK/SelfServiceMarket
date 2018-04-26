@@ -1,0 +1,85 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('AdminMarketStore/index')}">{:lang('MARKET_STORE')}</a></li>
+			<li><a href="{:url('AdminMarketStore/add')}">{:lang('MARKET_STORE_ADD')}</a></li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketStore/index')}">
+            关键字:
+            <input type="text" class="form-control" name="keyword" style="width: 120px;" value="{:input('request.keyword/s','')}" placeholder="请输入{:lang('KEYWORDS')}">
+			店铺状态:
+			<select id="select-store_status" class="form-control" name="status" style="width:120px;">
+				<option value="-1" >全部</option>
+				<option value="1">营业</option>
+				<option value="2">打烊</option>
+				<option value="0">永久关闭</option>
+			</select>
+			<script type="text/javascript">
+				var ss = document.getElementById("select-store_status");
+				ss.value="{:input('request.status', 1)}";//默认显示营业中的店铺
+			</script>
+			
+			<input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('AdminMarketStore/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>{:lang('STORE_NAME')}</th>
+					<th>{:lang('STORE_ADDRESS')}</th>
+					<th>{:lang('STORE_ADMINSTRATOR')}</th>
+					<th>{:lang('STORE_CREATE_TIME')}</th>
+					<th>{:lang('STATUS')}</th>
+					<th width="130">{:lang('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="stores" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.name}</td>
+					<td>{$vo.address}</td>
+					<td><!-- 管理员信息 -->
+						{$vo.adminstrator_name} </br>
+						{$vo.mobile}
+					</td>
+					<td>{:date('Y-m-d H:i', $vo.create_time)}</td>
+					<td>
+						<if condition="$vo['status'] eq 0">
+							<font color="#cccccc" >{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</font>
+						<elseif condition="$vo['status'] eq 1" />
+							<font color="#00ff00" >{:lang('STORE_STATUS_OPEN')}</font>
+						<elseif condition="$vo['status'] eq 2" />
+							<font color="#000000" >{:lang('STORE_STATUS_CLOSE')}</font>
+						</if>
+					</td>
+					<!-- 操作 -->
+					<td>
+						<if condition="$vo['status'] eq 0">
+							<font color="#cccccc">{:lang('EDIT')}</font>
+						<else />
+							<a href='{:url("AdminMarketStore/edit",array("id"=>$vo["id"]))}'>{:lang('EDIT')}</a>
+						</if>
+						</br>
+						<if condition="$vo['status'] eq 0">
+							<!-- 永久关停的店铺无操作 -->
+						<elseif condition="$vo['status'] eq 1" />
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/close',['id'=>$vo.id])}', {:lang('STORE_STATUS_CLOSE')}, {width:600px;height:500px;});">{:lang('STORE_STATUS_CLOSE')}</a>
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/permanentClose',['id'=>$vo.id])}', {:lang('STORE_STATUS_CLOSE_PERMANENTLY')}, {width:600px;height:500px;});" style="color:red;">{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</a>
+						<elseif condition="$vo['status'] eq 2" />
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/open',['id'=>$vo.id])}', {:lang('STORE_STATUS_OPEN')}, {width:600px;height:500px;});">{:lang('STORE_STATUS_OPEN')}</a>
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/permanentClose',['id'=>$vo.id])}', {:lang('STORE_STATUS_CLOSE_PERMANENTLY')}, {width:600px;height:500px;});" style="color:red;">{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</a>
+						</if>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{//$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

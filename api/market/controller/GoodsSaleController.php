@@ -38,13 +38,16 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				'modify_time'	=> time()
 			];
 			$result = Db::name("sale")->where('id',"$outTradeNo")->update($arr);//4 取消交易
-			if(!empty($result)){
+			if($result){
 				//改变商品的状态
 				$goods_detail = Db::name('sale')->where('id',"$outTradeNo")->limit(1)->column('goods_detail');
-				$goods_detail = json_decode($goods_detail,true);
-				foreach($goods_detail as $goods){
-					$goods_id = $goods['id'];
-					Db::name('goods')->where('id',"$goods_id")->update(['status'=>1]);//1:待售
+				if(count($goods_detail)>0){
+					$goods_detail = $goods_detail['0'];
+					$goods_detail = json_decode($goods_detail,true);
+					foreach($goods_detail as $goods){
+						$goods_id = $goods['id'];
+						Db::name('goods')->where('id',"$goods_id")->update(['status'=>1]);//1:待售
+					}
 				}
 				$this->success("取消交易成功!");
 			}else{
@@ -249,6 +252,8 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				$this->error($validate->getError());
 			}
 			$data['goods_detail'] = base64_decode($data['goods_detail']);
+			$discount_detail = base64_decode($data['discount_detail']);
+			unset($data['discount_detail']);
 			//将数据插入数据库中
 			$id = date("YmdHis",time()). strval(rand(100000,999999));//交易单号
 			$data['id'] = $id;
@@ -261,11 +266,21 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			if(empty($res)){
 				$this->error("提交订单失败!");
 			}else{
-				//将所提交的订单中的全部商品锁定:
+				//将所提交的订单中的全部商品锁定
 				$goods_detail = json_decode($data['goods_detail'],true);
 				foreach($goods_detail as $goods){
 					$goods_id = $goods['id'];
 					Db::name('goods')->where('id',"$id")->update(['status'=>"3"]);//3:锁定
+				}
+				//修改优惠使用信息(撤销时也不恢复优惠的使用)
+				$discount_detail = json_decode($discount_detail, true);
+				foreach($discount_detail as $discount){
+					$discount_id = $discount['id'];
+					if($discount['rest'] == 2147483647){//表示不减少优惠数量
+						continue;
+					}
+					$rest = $discount['rest'] - $discount['use'];
+					Db::name('discount')->where('id',"$discount_id")->update(['rest'=>$rest]);
 				}
 				$this->success("提交订单成功!",'' ,['out_trade_no'=>"$id"]);
 			}
@@ -304,7 +319,7 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			$input->SetBody($body);//商品标题
 			//$input->SetAttach();
 			$input->SetOut_trade_no($outTradeNo);//商家订单号
-			$input->SetTotal_fee(intval($deal['total_amount']));//支付额, 微信支付以分为单位
+			$input->SetTotal_fee(intval($deal['pay_amount']));//支付额, 微信支付以分为单位
 			$input->SetTime_start(date("YmdHis"));//交易开始时间
 			$input->SetTime_expire(date("YmdHis", time() + 600));//交易结束时间
 			$input->SetNotify_url("http://paysdk.weixin.qq.com/example/notify.php");//通知回调接口,必须设置。。
@@ -350,6 +365,7 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			$qrPayRequestBuilder->setTotalAmount(sprintf("%.2f",$deal['total_amount']/100));
 			$qrPayRequestBuilder->setTimeExpress($timeExpress);
 			$qrPayRequestBuilder->setSubject($subject);
+			$qrPayRequestBuilder->setUndiscountableAmount(sprintf("%.2f",($deal['total_amount']-$deal['discount_amount'])/100));
 			$qrPayRequestBuilder->setDiscountableAmount(sprintf("%.2f",$deal['discount_amount']/100));
 			$qrPayRequestBuilder->setGoodsDetailList($goodsDetailList);
 			$qrPayRequestBuilder->setStoreId($deal['store_id']);

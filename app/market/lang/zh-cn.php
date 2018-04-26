@@ -75,4 +75,15 @@ return [
 	'DISCOUNT_DELETE_CONFIRM_MSG'		 => '确定删除此优惠?',
 	'MARKET_SALE_DISCOUNT_GOODS_ADD'	 => '添加优惠商品',
 	'MARKET_DISCOUNT_GOODS'				 => '优惠商品',
+	/*店铺管理*/
+	'MARKET_STORE'						 => '店铺管理',
+	'MARKET_STORE_ADD'					 => '添加店铺',
+	'MARKET_STORE_EDIT'					 => '编辑店铺',
+	'STORE_NAME'						 => '店铺名称',
+	'STORE_ADDRESS'						 => '店铺地址',
+	'STORE_ADMINSTRATOR'				 => '管理员',
+	'STORE_CREATE_TIME'					 => '创建时间',
+	'STORE_STATUS_CLOSE_PERMANENTLY'	 => '永久关闭',
+	'STORE_STATUS_CLOSE'				 => '打烊',
+	'STORE_STATUS_OPEN'					 => '营业',
 ];
