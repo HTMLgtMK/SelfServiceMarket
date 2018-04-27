@@ -17,7 +17,7 @@ class AdminMarketStoreValidate extends Validate {
 		'adminstrator_id'		=> 'require'
 	];
 	protected $message = [
-		'id.require'			=> '请传入店铺ID!'
+		'id.require'			=> '请传入店铺ID!',
 		'name.require'			=> '请输入店铺名称!',
 		'address.require'		=> '请输入店铺地址',
 		'adminstrator_id.require' => '请选择店铺管理员!'

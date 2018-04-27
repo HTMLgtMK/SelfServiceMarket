@@ -12,6 +12,7 @@
 			店铺状态:
 			<select id="select-store_status" class="form-control" name="status" style="width:120px;">
 				<option value="-1" >全部</option>
+				<option value="3">营业和打烊</option>
 				<option value="1">营业</option>
 				<option value="2">打烊</option>
 				<option value="0">永久关闭</option>
@@ -67,11 +68,11 @@
 						<if condition="$vo['status'] eq 0">
 							<!-- 永久关停的店铺无操作 -->
 						<elseif condition="$vo['status'] eq 1" />
-							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/close',['id'=>$vo.id])}', {:lang('STORE_STATUS_CLOSE')}, {width:600px;height:500px;});">{:lang('STORE_STATUS_CLOSE')}</a>
-							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/permanentClose',['id'=>$vo.id])}', {:lang('STORE_STATUS_CLOSE_PERMANENTLY')}, {width:600px;height:500px;});" style="color:red;">{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</a>
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/close', array('id'=>$vo.id))}', '{:lang('STORE_STATUS_CLOSE')}', {width:'600px',height:'300px'});">{:lang('STORE_STATUS_CLOSE')}</a>
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/permanentClose',array('id'=>$vo.id))}', '{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}', {width:'600px',height:'300px'});" style="color:red;">{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</a>
 						<elseif condition="$vo['status'] eq 2" />
-							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/open',['id'=>$vo.id])}', {:lang('STORE_STATUS_OPEN')}, {width:600px;height:500px;});">{:lang('STORE_STATUS_OPEN')}</a>
-							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/permanentClose',['id'=>$vo.id])}', {:lang('STORE_STATUS_CLOSE_PERMANENTLY')}, {width:600px;height:500px;});" style="color:red;">{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</a>
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/open',array('id'=>$vo.id))}', '{:lang('STORE_STATUS_OPEN')}', {width:'600px',height:'300px'});">{:lang('STORE_STATUS_OPEN')}</a>
+							<a href="javascript:parent.openIframeDialog('{:url('AdminMarketStore/permanentClose',array('id'=>$vo.id))}', '{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}', {width:'600px',height:'300px'});" style="color:red;">{:lang('STORE_STATUS_CLOSE_PERMANENTLY')}</a>
 						</if>
 					</td>
 				</tr>

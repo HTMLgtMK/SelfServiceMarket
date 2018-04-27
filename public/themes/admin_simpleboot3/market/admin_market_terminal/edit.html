@@ -1,0 +1,55 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketTerminal/index')}">{:lang('MARKET_STORE_TERMINAL')}</a></li>
+			<li><a href="{:url('AdminMarketTerminal/add')}">{:lang('MARKET_STORE_TERMINAL_ADD')}</a></li>
+			<li class="active"><a href="#">{:lang('MARKET_STORE_TERMINAL_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketTerminal/editPost')}">
+			<input type="hidden" name="id" value="{$terminal.id}" />
+			<div class="form-group">
+				<label for="input-terminal_ip" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('TERMINAL_IP')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-terminal_ip" name="ip" value="{$terminal.ip}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="select-terminal_store_id" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('STORE_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control" id="select-terminal_store_id" name="store_id" >
+						<option value="0">null</option>
+						<foreach name="stores" item="vo">
+							<option value="{$vo.id}" >{$vo.name} - {$vo.adminstrator_name} - {$vo.adminstrator_mobile}</option>
+						</foreach>
+					</select>
+					<script type="text/javascript">
+						var ss = document.getElementById("select-terminal_store_id");
+						ss.value = "<php>echo (empty($terminal['store_id'])? 0: $terminal['store_id']);</php>";
+					</script>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="select-terminal_status" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('STATUS')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control" id="select-terminal_status" name="status" >
+						<option value="1">正常</option>
+						<option value="2">停用</option>
+					</select>
+					<script type="text/javascript">
+						var ss = document.getElementById("select-terminal_status");
+						ss.value = "{$terminal.status}";
+					</script>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('EDIT')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

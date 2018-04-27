@@ -86,4 +86,15 @@ return [
 	'STORE_STATUS_CLOSE_PERMANENTLY'	 => '永久关闭',
 	'STORE_STATUS_CLOSE'				 => '打烊',
 	'STORE_STATUS_OPEN'					 => '营业',
+	/*自助终端管理*/
+	'MARKET_STORE_TERMINAL'				 => '自助终端管理',
+	'MARKET_STORE_TERMINAL_ADD'			 => '添加终端',
+	'MARKET_STORE_TERMINAL_EDIT'		 => '编辑终端',
+	'TERMINAL_IP'						 => '终端IP',
+	'TERMINAL_SALECOUNT'				 => '销售量',
+	'TERMINAL_SUSPEND'					 => '停用',
+	'TERMINAL_CANCELSUSPEND'			 => '启用',
+	'TERMINAL_SUSPEND_CONFIRM_MSG'		 => '确定停用终端?',
+	'TERMINAL_CANCELSUSPEND_CONFIRM_MSG' => '确定启用终端?',
+	'TERMINAL_DELETE_CONFIRM_MSG'		 => '确定删除终端?',
 ];

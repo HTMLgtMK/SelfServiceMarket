@@ -1,0 +1,105 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<form method="post" class="form-horizontal" action="{:url('AdminMarketStore/open')}">
+			 <span>验证店铺管理员手机验证码:</span>
+			 <input type="hidden" name="id" value="{$store_id}" />
+			 <div class="form-group"  style="margin-top: 10px;" >
+                <div style="position: relative;">
+                    <input id="input-verification_code" type="text" name="captcha" placeholder="验证码" class="form-control captcha">
+					<button type="button" id="btn-get_verification_code" class="btn btn-default" style="margin-top: 10px;" >获取验证码</button>
+                </div>
+				<div ><span id="span-msg" style="color:red;"></span></div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">确认操作</button>
+                </div>
+            </div>
+		</form>
+	</div>
+	<script type="text/javascript" >
+	$(document).ready(function(){
+		var store_id = "{$store_id}";
+		var descount = 10;
+		
+		$("#btn-get_verification_code").click(function(){
+			$("#span-msg").html("");
+			var url = "{:url('AdminMarketStore/getVerificationCode')}";
+			$.ajax({
+				url : url,
+				async : true,
+				data : {
+					'id' : store_id
+				},
+				success: function(data,status,xhr){
+					console.log(data);
+					$("#span-msg").html(data.msg);
+					if(data.code == 1){
+						descount = 10;
+						$("#btn-get_verification_code").attr("disabled","disabled");
+						var intervalId = setInterval(function(){
+							if(descount > 0) {
+								--descount ;
+								$("#btn-get_verification_code").html("获取验证码("+descount+")");
+							}else{
+								descount = 10;
+								$("#btn-get_verification_code").html("获取验证码");
+								$("#btn-get_verification_code").removeAttr("disabled");
+								clearInterval(intervalId);
+							}
+						}, 1000);
+					}
+				}
+			});/* ajax getVerificationCode */
+		});
+		
+		Wind.use("noty", function(){
+			$("form").submit(function(e){
+				e.preventDefault();/*禁止自动提交*/
+				var form = this;
+				$verification_code = $("#input-verification_code").val();
+				$.ajax({
+					url : form.action,
+					type : form.method,
+					async : true,
+					data : {
+						'id' : store_id,
+						'verification_code' : $verification_code
+					},
+					success : function(data, status, xhr){
+						console.log(data);
+						$("#span-msg").html(data.msg);
+						if(data.code == 1){
+							noty({
+                                text: data.msg,
+                                type: 'success',
+                                layout: 'topCenter',
+                                modal: true,
+                                // animation: {
+                                //     open: 'animated bounceInDown', // Animate.css class names
+                                //     close: 'animated bounceOutUp', // Animate.css class names
+                                // },
+                                timeout: 800,
+                                callback: {
+                                    afterClose: function () {
+                                        //刷新店铺管理列表
+										reloadPage(parent.window.frames[1].window);
+										//关闭当前dialog , 只有通过 JavaScript 代码打开的窗口才能够由 JavaScript 代码关闭。
+										self.close();
+										
+                                    }
+                                }
+                            }).show();
+						}
+					}
+				});
+			});
+		});
+	});
+	</script>
+	<script src="__STATIC__/js/wind.js" ></script>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

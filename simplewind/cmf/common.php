@@ -1212,10 +1212,10 @@ function cmf_get_verification_code($account, $length = 6)
             $result = true;
         } else if ($findVerificationCode['count'] < $maxCount) {
             $result = true;
-        }
+        } 
     }
 
-    if ($result) {
+    if ($result) {//需要重新生成
         switch ($length) {
             case 4:
                 $result = rand(1000, 9999);
@@ -1229,7 +1229,9 @@ function cmf_get_verification_code($account, $length = 6)
             default:
                 $result = rand(100000, 999999);
         }
-    }
+    } else {
+		$result = $findVerificationCode['code'];
+	}
 
     return $result;
 }

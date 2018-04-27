@@ -1,0 +1,82 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('AdminMarketTerminal/index')}">{:lang('MARKET_STORE_TERMINAL')}</a></li>
+			<li><a href="{:url('AdminMarketTerminal/add')}">{:lang('MARKET_STORE_TERMINAL_ADD')}</a></li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketTerminal/index')}">
+            店铺: 
+			<select id="select-store_id" class="form-control" name="store_id" style="width:120px;" >
+				<option value="0">全部</option>
+				<foreach name="stores" item="vo">
+					<option value="{$vo.id}">{$vo.name}</option>
+				</foreach>
+			</select>
+			<script type="text/javascript">
+				var ss = document.getElementById("select-store_id");
+				ss.value = "{:input('request.store_id/s', 0)}";
+			</script>
+			状态:
+			<select id="select-terminal_status" class="form-control" name="status" style="width:120px;">
+				<option value="0" >全部</option>
+				<option value="1">正常</option>
+				<option value="2">停用</option>
+			</select>
+			<script type="text/javascript">
+				var ss = document.getElementById("select-terminal_status");
+				ss.value="{:input('request.status', 1)}";//默认显示正常状态下终端列表
+			</script>
+			
+			<input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('AdminMarketTerminal/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>{:lang('TERMINAL_IP')}</th>
+					<th>{:lang('TERMINAL_SALECOUNT')}</th>
+					<th>{:lang('STORE_NAME')}</th>
+					<th>{:lang('STATUS')}</th>
+					<th width="130">{:lang('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="terminals" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.ip}</td>
+					<td>{$vo.salecount}</td>
+					<td>{$vo.store_name}</td>
+					<td>
+						<if condition="$vo['status'] eq 1" >
+							<font color="#00ff00" >正常</font>
+						<elseif condition="$vo['status'] eq 2" />
+							<font color="#cccccc" >停用</font>
+						</if>
+					</td>
+					<!-- 操作 -->
+					<td>
+						<a href='{:url("AdminMarketTerminal/edit",array("id"=>$vo["id"]))}'>{:lang('EDIT')}</a>
+						<if condition="$vo['status'] eq 1" >
+							<a href='{:url("AdminMarketTerminal/suspend",array("id"=>$vo["id"]))}' class="js-ajax-dialog-btn" data-msg="{:lang('TERMINAL_SUSPEND_CONFIRM_MSG')}">{:lang('TERMINAL_SUSPEND')}</a>
+						<elseif condition="$vo['status'] eq 2" />
+							<a href='{:url("AdminMarketTerminal/cancelsuspend",array("id"=>$vo["id"]))}'  class="js-ajax-dialog-btn" data-msg="{:lang('TERMINAL_CANCELSUSPEND_CONFIRM_MSG')}">{:lang('TERMINAL_CANCELSUSPEND')}</a>
+						</if>
+						<if condition="$vo.salecount lt 0" >
+							<font color="#cccccc">{:lang('DELETE')}</font>
+						<else />
+							<a href='{:url("AdminMarketTerminal/delete",array("id"=>$vo["id"]))}'  class="js-ajax-delete" data-msg="{:lang('TERMINAL_DELETE_CONFIRM_MSG')}">{:lang('DELETE')}</a>
+						</if>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{//$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>
