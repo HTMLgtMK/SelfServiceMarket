@@ -92,3 +92,12 @@ CREATE TABLE IF NOT EXISTS `tb_sale` (
 	FOREIGN KEY(`store_id`) REFERENCES `tb_store`(`id`),
 	FOREIGN KEY(`terminal_id`) REFERENCES `tb_store_terminal`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交易表';
+
+--
+-- 视图的结构 `view_store_sale` 店铺今日交易视图
+--
+
+CREATE VIEW `view_store_sale` AS 
+	SELECT `store_id`, sum(`total_amount`) as `sale_total_amount` FROM `tb_sale` 
+		WHERE `create_time` BETWEEN unix_timestamp(curdate()) AND unix_timestamp() 
+		GROUP BY `store_id` ;

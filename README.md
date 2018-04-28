@@ -2,6 +2,88 @@
 
 -------------------------------------------------
 
+2018.04.28 20:36
+
+今天完成了销售管理主界面的设计和编写。
+
+1. 新增视图`view_store_sale`, 用来表示店铺当日的销售额。
+	用到了Mysql中的一些函数, 下面是当天日期函数小结:
+	1. `now()` 获取当前时间
+	```sql
+	mysql > select now();
+	```
+	+---------------------+
+	| now()               |
+	+---------------------+
+	| 2018-04-28 20:41:03 |
+	+---------------------+
+	1 row in set (0.00 sec)
+
+	2. `curdate()` 获取当前日期
+	```sql
+	mysql > select curdate();
+	```
+	+------------+
+	| curdate()  |
+	+------------+
+	| 2018-04-28 |
+	+------------+
+	1 row in set (0.00 sec)
+	
+	3. `curtime()` 获取当前时间
+	```sql
+	mysql > select curtime();
+	```
+	+-----------+
+	| curtime() |
+	+-----------+
+	| 20:43:44  |
+	+-----------+
+	1 row in set (0.00 sec)
+	
+	4. 时间戳（timestamp, 非毫秒时间戳）转换、增、减函数：
+	``timestamp(date)`` -- date to timestamp 
+	``timestamp(dt,time)`` -- dt + time 
+	``timestampadd(unit,interval,datetime_expr)``
+	
+	5. Unix 时间戳、日期）转换函数：
+	``unix_timestamp()`` -- 当前时间的unix时间戳
+	``unix_timestamp(date)`` -- date to unix_timestamp
+	
+	```sql
+	mysql > select  timestamp(curdate());
+	```
+	+----------------------+
+	| timestamp(curdate()) |
+	+----------------------+
+	| 2018-04-28 00:00:00  |
+	+----------------------+
+	1 row in set (0.00 sec)
+	
+2. MYSQL 对查询为 `NULL` 的值赋默认值
+	执行`tb_store`表对`view_store_sale`左连接(`LEFT JOIN`), 使得一些当日没有交易的店铺的销售额为 `NULL`,
+	为解决这个问题, 可以使用 `IFNULL`函数对`NULL`值赋默认值。
+	eg:
+	```sql
+	mysql > SELECT `a`.`id`, `a`.`name`, IFNULL(`b`.`store_id`, `a`.`id`) as `store_id`, IFNULL(`b`.`sale_total_amount`, 0) as `sale_total_amount`
+					FROM `tb_store` as `a` 
+					LEFT JOIN `view_store_sale` as `b` ON `a`.`id`=`b`.`store_id`
+					WHERE `a`.`status`='1' OR `a`.`status`='2' ;
+	```
+	+----+---------+----------+-------------------+
+	| id | name    | store_id | sale_total_amount |
+	+----+---------+----------+-------------------+
+	|  1 | store 1 |        1 |              1204 |
+	|  2 | store 2 |        2 |                 0 |
+	+----+---------+----------+-------------------+
+	2 rows in set (0.00 sec)
+	可完美解决默认值的问题。
+	
+3. 使用了 `Chart.js` 表现店铺交易量。
+	`Chart.js`地址为[Chart.js](http://www.chartjs.org/), 下载后存放的地址为: `/public/static/js/chart/Chart.js`。
+
+-------------------------------------------------
+
 2018.04.27 09:21
 
 1. 完成了店铺管理的全部功能。

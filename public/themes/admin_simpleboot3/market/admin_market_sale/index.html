@@ -1,0 +1,212 @@
+<include file="public@header" />
+<!-- 添加柱状图的js -->
+<script src="__STATIC__/js/chart/Chart.js" ></script>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('AdminMarketSale/index')}">{:lang('MARKET_SALE')}</a></li>
+		</ul>
+		<div class="bg-primary">{:lang('SALE_REAL_TIME')}</div>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>{:lang('USER_NAME')}</th>
+					<th>{:lang('STORE_NAME')}</th>
+					<th>{:lang('SALE_TOTAL_COUNT')}</th>
+					<th>{:lang('SALE_CREATE_TIME')}</th>
+					<th>{:lang('STATUS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="deals" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.user_login}</td>
+					<td>{$vo.store_name}</td>
+					<td>{:sprintf('%.2f', $vo.total_amount/100)}</td>
+					<td>{:date('Y-m-d H:i', $vo.create_time)}</td>
+					<td>
+						<if condition="$vo['status'] eq 1"><!-- 待付款 -->
+							<font color="#cccccc" >{:lang('SALE_STATUS_WAITPAY')}</font>
+						<elseif condition="$vo['status'] eq 2" /><!-- 超时关闭 -->
+							<font color="#cccccc" >{:lang('SALE_STATUS_CLOSED')}</font>
+						<elseif condition="$vo['status'] eq 3" /><!-- 交易成功 -->
+							<font color="#00ff00" >{:lang('SALE_STATUS_SUCCESSE')}</font>
+						<elseif condition="$vo['status'] eq 4" /><!-- 交易取消 -->
+							<font color="#cccccc" >{:lang('SALE_STATUS_CANCELED')}</font>
+						</if>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		
+		<div>
+			<div class="bg-primary">{:lang('SALE_TOTAL_COUNT')}</div>
+			<!-- 交易总额显示 -->
+			<div style="width:100%; height:50px;">
+				<div class="pull-left" style="height:100%;" >
+					<span style="font:normal bold 20px;">{:lang('SALE_TODAT_DEAL_COUNT')} : </span>
+					<span style="font-size:30px; color:#00ff00;">{:sprintf("%.2f",$sale_today_total_amount/100)}</span>
+				</div>
+				<div class="pull-right" style="margin-right:50px; height:100%;" >
+					<a href="{:url('AdminMarketSale/analysis')}">年,季度,月交易量&gt;&gt;</a></br>
+					<a href="{:url('AdminMarketSale/storeSaleDetail')}">店铺交易量详情&gt;&gt;</a>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<!-- 店铺交易额柱状图显示 -->
+			<div style="width:100%;text-align:center;" ><!-- style="background:#FFFAFA; width:100%;" -->
+				<canvas id="chart-store_deals" ></canvas>
+				<!-- 导航条 -->
+				<nav aria-label="Page navigation" >
+					<ul class="pagination" id="chart-navigation-ul"></ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" >
+		/*初始化店铺交易额柱状图*/
+		$(document).ready(function(){
+			var labelSet = new Array();
+			var dataSet = new Array();
+			/*全部的数据,转存*/
+			<foreach name="store_deals" item="vo">
+				labelSet.push("{$vo.name}");
+				dataSet.push("{:sprintf('%.2f', $vo.sale_total_amount/100)}");
+			</foreach>
+			var backgroundColor = [
+					'rgba(255, 99, 132, 0.2)',
+					'rgba(54, 162, 235, 0.2)',
+					'rgba(255, 206, 86, 0.2)',
+					'rgba(75, 192, 192, 0.2)',
+					'rgba(153, 102, 255, 0.2)',
+					'rgba(255, 159, 64, 0.2)'
+				];/*柱状图背景颜色*/
+            var borderColor = [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+				];/*柱状图柱边框颜色*/
+			var page = 0;
+			var PAGE_COUNT = 6;/*每次只显示6个店铺*/
+			var chart; /*柱状图全局变量*/
+			/*前一页柱状图*/
+			function previousChart(){
+				if(page == 0) return;
+				/*清空当前数据*/
+				while(chart.data.labels.length != 0){
+					chart.data.labels.pop();
+					chart.data.datasets.data.pop();
+				}
+				page--;
+				for(i=page*PAGE_COUNT; i<dataSet.length && i<(page+1)*PAGE_COUNT;++i){
+					chart.data.labels.push(labelSet[i]);
+					chart.data.datasets.push({x:labelSet[i], y:dataSet[i]});
+				}
+				chart.update();
+			}
+			/*下一页柱状图*/
+			function nextChart(){
+				if(page == dataSet.length-1) return;
+				/*清空当前数据*/
+				while(chart.data.labels.length != 0){
+					chart.data.labels.pop();
+					chart.data.datasets.data.pop();
+				}
+				page++;
+				for(i=page*PAGE_COUNT; i<dataSet.length && i<(page+1)*PAGE_COUNT;++i){
+					chart.data.labels.push(labelSet[i]);
+					chart.data.datasets.push({x:labelSet[i], y:dataSet[i]});
+				}
+				chart.update();
+			}
+			/*指定页柱状图*/
+			function pageChart(pg){
+				/*清空当前数据*/
+				while(chart.data.labels.length != 0){
+					chart.data.labels.pop();
+					chart.data.datasets.data.pop();
+				}
+				page = pg-1;
+				for(i=page*PAGE_COUNT; i<dataSet.length && i<(page+1)*PAGE_COUNT;++i){
+					chart.data.labels.push(labelSet[i]);
+					chart.data.datasets.push({x:labelSet[i], y:dataSet[i]});
+				}
+				chart.update();
+			}
+			
+			/**
+			 * 初始化柱状图
+			 * @return chart
+			 */ 
+			function initChart(){
+				var data = new Array();
+				var labels = new Array();
+				dataSetSize = dataSet.length;
+				for(i=page*PAGE_COUNT;i<dataSetSize && i<(page+1)*PAGE_COUNT; ++i){
+					data.push({x:labelSet[i], y:dataSet[i]});
+					labels.push(labelSet[i]);
+				}
+				var context = document.getElementById("chart-store_deals").getContext("2d");
+				var chart = new Chart(context, {
+					type: 'bar',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: "今日交易量",
+							data: data,
+							backgroundColor: backgroundColor,
+							borderColor: borderColor,
+							borderWidth: 1
+						}]
+					},
+					options: {
+						responsive: true,
+						title: {
+							display: true,
+							text: "店铺今日交易量"
+						},
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero:true
+								}
+							}]
+						}
+					}
+				});
+				console.log(data);
+				/*生成导航条*/
+				page_count = page/6;
+				if(page%6 != 0) page_count++;
+				$ul = $("#chart-navigation-ul");
+				$prevoius = $("<li><a aria-label='Previous' ><span aria-hidden='true'>&laquo;</span></a></li>");
+				$ul.append($prevoius);
+				$($prevoius.a).click(previousChart());
+				for(i=1;i<=page_count;++i){
+					$li = $("<li><a>"+i+"</a></li>");
+					$ul.append($li);
+					$($li.a).click(pageChart(i));
+				}
+				$next = $("<li><a aria-label='Next' aria-label='Previous' ><span aria-hidden='true'>&raquo;</span></a></li>");
+				$ul.append($next);
+				/*$($next.a).click(nextChart());*/
+				return chart;
+			}// function initChart
+			
+			chart = initChart();
+			/*重新加载本页面*/
+			setTimeout(function(){
+				reloadPage(window);
+			}, 10000);
+		});
+	</script>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

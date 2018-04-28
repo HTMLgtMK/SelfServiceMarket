@@ -97,4 +97,15 @@ return [
 	'TERMINAL_SUSPEND_CONFIRM_MSG'		 => '确定停用终端?',
 	'TERMINAL_CANCELSUSPEND_CONFIRM_MSG' => '确定启用终端?',
 	'TERMINAL_DELETE_CONFIRM_MSG'		 => '确定删除终端?',
+	/*销售管理*/
+	'MARKET_SALE'						 => '销售管理',
+	'SALE_REAL_TIME'					 => '实时交易信息',
+	'SALE_TODAT_DEAL_COUNT'				 => '今日交易额',
+	'USER_NAME'							 => '用户名',
+	'SALE_TOTAL_COUNT'					 => '交易总额',
+	'SALE_CREATE_TIME'					 => '交易时间',
+	'SALE_STATUS_WAITPAY'				 => '等待付款',
+	'SALE_STATUS_CLOSED'				 => '超时关闭',
+	'SALE_STATUS_SUCCESSE'				 => '交易成功',
+	'SALE_STATUS_CANCELED'				 => '交易取消',
 ];
