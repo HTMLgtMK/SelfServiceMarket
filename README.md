@@ -2,6 +2,21 @@
 
 -------------------------------------------------
 
+2018.04.29 15:54
+
+1. 去掉了签到表(`tb_market_daily_checkin`)和员工工资财务表(`tb_market_salary_accounting`)，
+	添加了无人超市财务类型表(`tb_market_account_type`)和无人超市财务表(`tb_market_account`)。
+	财务类型表有默认类型，后面不做修改。
+
+2. 添加了财务管理(非自动管理, 店主也可以考虑不使用...)
+	可以打印报表，尝试了两种方法: `window.print()`, 和 `jquery.print()`方法.
+	1. `window.print()`参考baidu
+	2. `jquery.print()` 参考 [jQuery.print](http://doersguild.github.io/jQuery.print/)
+	
+3. window.open()的用法，由第二个参数可以指定打开窗口的类型。
+
+-------------------------------------------------
+
 2018.04.28 20:36
 
 今天完成了销售管理主界面的设计和编写。

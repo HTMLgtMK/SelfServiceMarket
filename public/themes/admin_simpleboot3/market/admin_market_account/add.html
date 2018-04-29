@@ -1,0 +1,50 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('AdminMarketAccount/index')}">{:lang('MARKET_ACCOUNT')}</a></li>
+			<li class="active"><a href="{:url('AdminMarketAccount/add')}">{:lang('MARKET_ACCOUNT_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('AdminMarketAccount/addPost')}">
+			<div class="form-group">
+				<label for="select-account_type_name" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('ACCOUNT_TYPE_NAME')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control" id="select-account_type_name" name="type_id">
+						<foreach name="types" item="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="select-account_inout" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('ACCOUNT_INOUT')}</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control" id="select-account_inout" name="inout">
+						<option value="1">收入</option>
+						<option value="2">支出</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-account_amount" class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('ACCOUNT_AMOUNT')}(分)</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="number" class="form-control" id="input-account_amount" name="amount" placeholder="0">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-account_remark" class="col-sm-2 control-label">{:lang('REMARK')}</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-account_remark" name="remark" placeholder="备注">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('AdminMarketAccount/indexGoods')}">{:lang('MARKET_ACCOUNT')}</a></li>
+			<li><a href="{:url('AdminMarketAccount/add')}">{:lang('MARKET_ACCOUNT_ADD')}</a></li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketAccount/index')}">
+            {:lang('KEYWORDS')}:
+            <input type="text" class="form-control" name="keywords" style="width: 120px;" value="{:input('request.keywords/s','')}" placeholder="请输入{:lang('KEYWORDS')}">
+			{:lang('ACCOUNT_TYPE_NAME')}:
+            <select id="select-account-type_id" class="form-control" name="type_id" style="width: 120px;">
+				<option value="0">全部</option>
+				<foreach name="types" item="vo">
+					<option value="{$vo.id}" >{$vo.name}</option>
+				</foreach>
+				<script type="text/javascript">
+					var ss = document.getElementById("select-account-type_id");
+					ss.value = "{:input('request.type_id/s', 0)}";
+				</script>
+			</select>
+			{:lang('ACCOUNT_INOUT')}:
+			<select id="select-account_inout" class="form-control" name="inout">
+				<option value="0">全部</option>
+				<option value="1">收入</option>
+				<option value="2">支出</option>
+			</select>
+			<script>
+				var ss = document.getElementById("select-account_inout");
+				ss.value = "{:input('request.inout','0')}";
+			</script>
+			{:lang('ACCOUNT_CREATE_TIME')}:
+            <input type="text" class="form-control js-datetime" name="create_time_min" style="width: 120px;" value="{:input('request.create_time_min/s','')}" placeholder="{:lang('ACCOUNT_CREATE_TIME_MIN')}">
+			-
+			<input type="text" class="form-control js-datetime" name="create_time_max" style="width: 120px;" value="{:input('request.create_time_max/s','')}" placeholder="{:lang('ACCOUNT_CREATE_TIME_MAX')}">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('AdminMarketAccount/index')}">清空</a>
+			<button id="btn-print" class="btn btn-primary" type="button" >{:lang("PRINT")}</button>
+        </form>
+		<php>$in_amount = 0;$out_amount = 0;$inout_amount=0;</php>
+		<div id="print-container">
+		<!-- startprint -->
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="150">ID</th>
+					<th>{:lang('ACCOUNT_TYPE_NAME')}</th>
+					<th>{:lang('ACCOUNT_INOUT')}</th>
+					<th>{:lang('ACCOUNT_AMOUNT')}</th>
+					<th>{:lang('ACCOUNT_CREATE_TIME')}</th>
+					<th>{:lang('REMARK')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="accounts" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.type_name}</td>
+					<td>
+						<if condition="$vo['inout'] eq 1" >
+							<font color="#00ff00">收入</font>
+							<php>$in_amount+=$vo['amount'];</php>
+							<php>$inout_amount+=$vo['amount'];</php>
+						<elseif condition="$vo['inout'] eq 2" />
+							<font color="#436EEE">支出</font>
+							<php>$out_amount+=$vo['amount'];</php>
+							<php>$inout_amount-=$vo['amount'];</php>
+						</if>
+					</td>
+					<td>{:sprintf("%.2f", $vo.amount/100)}</td>
+					<td>{:date('y-m-d H:i', $vo.create_time)}</td>
+					<td>{$vo.remark}</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+		</hr>
+		<div style="padding:20px;font-size:20px;" >
+			<span>收入总额: <font color="#00ff00"> {:sprintf("%.2f",$in_amount/100)}</font></span>&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>支出总额: <font color="#436EEE">{:sprintf("%.2f",$out_amount/100)}</font></span>&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>收支差: 	<font color="#ff0000">{:sprintf("%.2f",$inout_amount/100)}</font></span>
+		</div>
+		<!-- endprint -->
+		</div>
+	</div>
+	<script type="text/javascript" >
+		$(document).ready(function(){
+			$("#btn-print").click(function(){
+				$("#print-container").print();
+			});
+		});
+	</script>
+	<script src="__STATIC__/js/print/jQuery.print.min.js" ></script>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

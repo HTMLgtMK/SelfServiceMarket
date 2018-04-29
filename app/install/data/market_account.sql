@@ -33,3 +33,40 @@ CREATE TABLE IF NOT EXISTS `tb_market_daily_checkin` (
 	PRIMARY KEY(`id`),
 	FOREIGN KEY(`adminstrator_id`) REFERENCES `tb_adminstrator`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='每日签到表';
+
+------------------------------------------------------
+
+--
+--  表的结构 `tb_market_account_tag`
+--
+
+CREATE TABLE IF NOT EXISTS `tb_market_account_type` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`name` char(64) NOT NULL COMMENT '财务类型, 采购, 维护, 工资等',
+	PRIMARY KEY(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='无人超市财务类型表';
+
+
+--
+-- 转存表的数据 `tb_market_account_type`
+--
+
+INSERT INTO `tb_market_account_type`(`id`,`name`) VALUES
+	('1', '采购'),
+	('2', '维护'),
+	('3', '工资');
+	
+--
+-- 表的结构 `tb_market_account`
+--
+
+CREATE TABLE IF NOT EXISTS `tb_market_account`(
+	`id` int NOT NULL AUTO_INCREMENT,
+	`type_id` int NOT NULL COMMENT '财务类型',
+	`amount`  int NOT NULL DEFAULT '0' COMMENT '金额',
+	`inout` tinyint(3) NOT NULL DEFAULT '1' COMMENT '收入or支出, 1:收入, 2:支出',
+	`create_time` int NOT NULL DEFAULT '0' COMMENT '创建时间',
+	`remark` text COMMENT '备注',
+	PRIMARY KEY(`id`),
+	FOREIGN KEY(`type_id`) REFERENCES `tb_market_account_type`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='无人超市财务表';

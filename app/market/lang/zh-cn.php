@@ -7,6 +7,7 @@ return [
 	'KEYWORDS' 							 => '关键字',
 	'STATUS' 							 => '状态',
 	'WRITE'								 => '写入',
+	'PRINT'							 	 => '打印',
 	/*岗位管理*/
 	'MARKET_POST'						 => '岗位管理',
 	'MARKET_POST_ADD'					 => '添加岗位',
@@ -108,4 +109,13 @@ return [
 	'SALE_STATUS_CLOSED'				 => '超时关闭',
 	'SALE_STATUS_SUCCESSE'				 => '交易成功',
 	'SALE_STATUS_CANCELED'				 => '交易取消',
+	/*财务管理*/
+	'MARKET_ACCOUNT'					 => '财务管理',
+	'MARKET_ACCOUNT_ADD'				 => '添加账务',
+	'ACCOUNT_TYPE_NAME'					 => '账务名称',
+	'ACCOUNT_INOUT'						 => '收支',
+	'ACCOUNT_AMOUNT'					 => '金额',
+	'ACCOUNT_CREATE_TIME'				 => '创建时间',
+	'ACCOUNT_CREATE_TIME_MIN'			 => '开始时间',
+	'ACCOUNT_CREATE_TIME_MAX'			 => '过期时间',
 ];
