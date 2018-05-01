@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `tb_store_terminal` (
 	`ip` char(15) NOT NULL DEFAULT '0.0.0.0' COMMENT '终端ip地址',
 	`salecount` int NOT NULL DEFAULT '0' COMMENT '销售总数',
 	`status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '终端状态, 2:停用, 1:正常',
-	`store_id` int NOT NULL DEFAULT '0' COMMENT '店铺id',
+	`store_id` int NULL DEFAULT '0' COMMENT '店铺id',
 	`remark` text COMMENT '备注',
 	PRIMARY KEY(`id`),
 	UNIQUE KEY(`ip`),

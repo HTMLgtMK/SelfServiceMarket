@@ -15,7 +15,12 @@
  */
 if (!defined("AOP_SDK_WORK_DIR"))
 {
-	define("AOP_SDK_WORK_DIR", RUNTIME_PATH."/alipay/");//此处修改路径,手动创建runtime\api\alipay目录
+	$dir_runtime_alipay = RUNTIME_PATH."/alipay/";
+	if(!is_dir($dir_runtime_alipay)){
+		$result = mkdir($dir_runtime_alipay);
+		if(!$result) throw new Exception("create alipay runtime dir failed!");
+	}
+	define("AOP_SDK_WORK_DIR", $dir_runtime_alipay);//此处修改路径,手动创建runtime\api\alipay目录
 }
 /**
  * 是否处于开发模式

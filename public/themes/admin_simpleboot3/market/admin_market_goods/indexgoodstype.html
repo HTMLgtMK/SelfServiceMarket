@@ -6,7 +6,7 @@
 			<li class="active"><a href="{:url('/indexGoodsType')}">{:lang('MARKET_GOODS_TYPE')}</a></li>
 			<li><a href="{:url('AdminMarketGoods/addGoodsType')}">{:lang('MARKET_GOODS_TYPE_ADD')}</a></li>
 		</ul>
-        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketGoods/index')}">
+        <form class="well form-inline margin-top-20" method="post" action="{:url('AdminMarketGoods/indexGoodsType')}">
             名称:
             <input type="text" class="form-control" name="name" style="width: 120px;" value="{:input('request.name/s','')}" placeholder="请输入{:lang('GOODS_TYPE_NAME')}">
 			价格区间:

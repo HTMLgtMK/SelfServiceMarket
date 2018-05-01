@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `tb_market_daily_checkin` (
 	FOREIGN KEY(`adminstrator_id`) REFERENCES `tb_adminstrator`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='每日签到表';
 
-------------------------------------------------------
+-- ----------------------------------------------------
 
 --
 --  表的结构 `tb_market_account_tag`

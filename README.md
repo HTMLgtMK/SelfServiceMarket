@@ -2,6 +2,40 @@
 
 -------------------------------------------------
 
+2018.04.30 
+
+1. 完成批量数据初始化，建站完毕后可以直接使用数据接口初始化。
+	直接使用php+mysql导入数据出现了字符集不匹配的情况，后来发现本地服务器中数据库的字符集情况如下:
+	```sql
+	mysql > show variables like "%char%";
+	```
+	+--------------------------+---------------------------------------------+
+	| Variable_name            | Value                                       |
+	+--------------------------+---------------------------------------------+
+	| character_set_client     | gbk                                         |
+	| character_set_connection | gbk                                         |
+	| character_set_database   | utf8mb4                                     |
+	| character_set_filesystem | binary                                      |
+	| character_set_results    | gbk                                         |
+	| character_set_server     | latin1                                      |
+	| character_set_system     | utf8                                        |
+	| character_sets_dir       | D:\CodeSoft\Amp\xampp\mysql\share\charsets\ |
+	+--------------------------+---------------------------------------------+
+
+	而php+mysql 操作连接是utf8的，因此会出现字符集不匹配的错误。
+	解决方法:
+	```php
+	mysqli_query($conn, "set names 'gbk';");
+	```
+	
+	最后，还是采用了ThinkCMF5里面封装好的Db，编写脚本作为初始化数据接口: 
+	`/api/init/controller/IndexController.php`
+	
+2. 交易成功给店铺终端添加销量。
+	其实店铺也可以采用这种方法，但是只能获取总销量，要获取当日销量的话还是要使用view。
+	
+-------------------------------------------------
+
 2018.04.29 15:54
 
 1. 去掉了签到表(`tb_market_daily_checkin`)和员工工资财务表(`tb_market_salary_accounting`)，

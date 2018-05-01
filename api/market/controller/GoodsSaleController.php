@@ -405,14 +405,16 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				$goods_status = 2;break;
 			}
 		}
-		$goods_detail = Db::name('sale')->where("id","$deal_id")->limit(1)->column("goods_detail");
-		if(!empty($goods_detail)){
-			$goods_detail = $goods_detail['0'];
+		$deal = Db::name('sale')->where("id","$deal_id")->find();
+		if(!empty($deal)){
+			$goods_detail = $deal['goods_detail'];
 			$goods_detail = json_decode($goods_detail, true);//强制转成数组
 			foreach($goods_detail as $goods){
 				$goods_id = $goods['goods_id'];
 				Db::name("goods")->where('id',"$goods_id")->update(['status'=>"$goods_status"]);
 			}
+			//给店铺和终端添加销量
+			Db::name('store_terminal')->where('id', $deal['terminal_id'])->setInc('salecount', $deal['total_amount']);
 			return true;
 		}else{
 			return false;

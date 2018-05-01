@@ -39,7 +39,7 @@ class AdminMarketGoodsController extends AdminBaseController {
 			$where['address'] = ['LIKE', "%$address%"];
 		}
 		
-		if(isset($price_min) && isset($price_max)){
+		if(isset($price_min) && !empty($price_max)){// 保证 $price_max > 0
 			$where['price'] = ['BETWEEN', ["$price_min","$price_max"]];
 		}
 		

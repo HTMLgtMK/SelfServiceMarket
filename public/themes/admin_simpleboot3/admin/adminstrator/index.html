@@ -14,16 +14,16 @@
             手机号:
             <input type="text" class="form-control" name="user_mobile" style="width: 120px;" value="{:input('request.user_mobile/s','')}" placeholder="请输入{:lang('MOBILE')}">
             岗位:
-			<select id="post" class="form-control" name="post_id">
-				<option value='0'>全部</option>
+			<select id="select-post" class="form-control" name="post_id">
+				<option value="0">全部</option>
 				<foreach name="posts" item='vo'>
 					<option value="{$vo.id}">{$vo.name}</option>
 				</foreach>
 			</select>
 			<script>
 				//默认选择项
-				var ss = document.getElementById("post");
-				ss.value="{:input('request.post_id/s')}";
+				var ss = document.getElementById("select-post");
+				ss.value="{:input('request.post_id/s',0)}";
 			</script>
 			员工状态:
 			<select id="user_status" class="form-control" name="user_status">
@@ -34,7 +34,7 @@
 			<script>
 				//默认选择项
 				var ss = document.getElementById("user_status");
-				ss.value="{:input('request.user_status/s')}";
+				ss.value="{:input('request.user_status/s',1)}";
 			</script>
             <input type="submit" class="btn btn-primary" value="搜索" />
             <a class="btn btn-danger" href="{:url('Adminstrator/index')}">清空</a>
