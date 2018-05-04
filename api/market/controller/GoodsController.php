@@ -13,7 +13,141 @@ use think\Validate;
 class GoodsController extends RestAdminBaseController {
 	
 	/**
-	 * 根据商品id获取商品信息
+	 * 商品列表
+	 */
+	public function index(){
+		$where = [];
+		/*搜索条件*/
+		$name = $this->request->param('name');
+		$keywords = $this->request->param('keywords');
+		$date_min = $this->request->param("date_min");
+		$date_max = $this->request->param('date_max');
+		$batch_number = $this->request->param('batch_number');
+		$status = $this->request->param('status',1);
+		
+		if(!empty($name)){
+			$where['b.name'] = ['LIKE', "%$name%"];
+		}
+		
+		if(!empty($keywords)){
+			$where['b.address|b.company'] = ['LIKE', "%$keywords%"];			
+		}
+		
+		if(!empty($date_min) && !empty($date_max)){
+			$where['a.manufacture_date'] = ['between', ["$date_min","$date_max"]];
+		}
+		
+		if(!empty($batch_number)){
+			$where['a.batch_number'] = ['=', "$batch_number"];
+		}
+		
+		if(!empty($status)){
+			$where['a.status'] = ['=', "$status"];
+		}
+		
+		$goods = Db::name('goods')
+					->alias('a')
+					->field("a.*, b.name, b.images, b.price")
+					->join('__GOODS_TYPE__ b', 'a.type_id = b.id')
+					->where($where)
+					->order('manufacture_date desc')
+					->paginate(10);
+					
+		$arr = [
+			'name' 			=> "$name",
+			'keywords' 		=> "$keywords",
+			'date_min'		=> "$date_min",
+			'date_max'		=> "$date_max",
+			'batch_number'		=> "$batch_number",
+			'status'		=> "$status",
+		];
+		if(!empty($goods)){
+			$this->success("请求成功!", ['goods'=>$goods]);
+		}else{
+			$this->error("请求失败!");
+		}
+	}
+	
+	/**
+	 * 商品下架
+	 * @param id 商品id
+	 */
+	public function delete(){
+		$goods_id = $this->request->param('id');
+		if(!empty($goods_id)){
+			$status = Db::name("goods")->where('id',"$goods_id")->limit(1)->column('status');
+			if(!empty($status)){
+				$status = $status['0'];
+				if($status == 1){
+					$result = Db::name('goods')->where('id',"$goods_id")->delete();
+					if($result){
+						$this->success("下架成功!");
+					}else{
+						$this->error("下架失败!");
+					}
+				}else{//已售
+					$this->error("该商品已售 或 被锁定，不可下架!");
+				}
+			}else{
+				$this->error("商品不存在!");
+			}
+		}else{
+			$this->error("请传入商品ID!");
+		}
+	}
+	
+	/**
+	 * 编辑商品
+	 */
+	public function edit(){
+		$goods_id = $this->request->param('id');
+		$goods = Db::name('goods')->where('id',"$goods_id")->find();
+		if($goods['status'] != 1){
+			return $this->error("商品已售或被锁定，不可修改!");
+		}
+		$goods_type = Db::name('goods_type')->select();
+		$this->success("请求成功!", ['goods_type'=>$goods_type, "goods"=>$goods]);
+	}
+	
+	/**
+	 * 编辑商品提交
+	 */
+	public function editPost(){
+		if($this->request->isPost()){
+			$validate = new Validate([
+				'id' 			=> "require",
+				'type_id'		=> "require",
+				"manufacture_date"	=> "require",
+				"batch_number"	=> "require",
+			]);
+			$validate->message([
+				"id.require"			=> "请指定商品ID",
+				"type_id.require"		=> "请指定商品类别",
+				"manufacture_date.require"	=> "请输入生产日期",
+				"batch_number.require"	=> "请输入生产批号"		
+			]);
+			$data = $this->request->param();
+			if(!$validate->check($data)){
+				$this->error($validate->getError());
+			}
+			//$data['manufacture_date'] = strtotime($data['manufacture_date']);
+			if(array_key_exists("status",$data)){
+				$data['status'] = 1;
+			}
+			
+			$result = Db::name('goods')->update($data);
+			if($result){
+				$this->success("修改成功!");
+			}else{
+				$this->error("修改失败!");
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * 根据商品id获取批量商品信息
 	 */
 	public function getGoodsInfo(){
 		$data = $this->request->param();

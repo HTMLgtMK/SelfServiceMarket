@@ -212,6 +212,7 @@ class AdminMarketGoodsController extends AdminBaseController {
 					->field("a.*, b.name, b.images, b.price")
 					->join('__GOODS_TYPE__ b', 'a.type_id = b.id')
 					->where($where)
+					->order('manufacture_date desc')
 					->paginate(10);
 					
 		$arr = [

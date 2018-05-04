@@ -273,14 +273,16 @@ class GoodsSaleController extends GoodsSaleBaseController {
 					Db::name('goods')->where('id',"$id")->update(['status'=>"3"]);//3:锁定
 				}
 				//修改优惠使用信息(撤销时也不恢复优惠的使用)
-				$discount_detail = json_decode($discount_detail, true);
-				foreach($discount_detail as $discount){
-					$discount_id = $discount['id'];
-					if($discount['rest'] == 2147483647){//表示不减少优惠数量
-						continue;
+				if(!empty($discount)){
+					$discount_detail = json_decode($discount_detail, true);
+					foreach($discount_detail as $discount){
+						$discount_id = $discount['id'];
+						if($discount['rest'] == 2147483647){//表示不减少优惠数量
+							continue;
+						}
+						$rest = $discount['rest'] - $discount['use'];
+						Db::name('discount')->where('id',"$discount_id")->update(['rest'=>$rest]);
 					}
-					$rest = $discount['rest'] - $discount['use'];
-					Db::name('discount')->where('id',"$discount_id")->update(['rest'=>$rest]);
 				}
 				$this->success("提交订单成功!",'' ,['out_trade_no'=>"$id"]);
 			}
