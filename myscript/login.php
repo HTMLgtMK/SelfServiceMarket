@@ -7,8 +7,8 @@
  
  
  $user_data = [
- 		'username'		 => "GT_GameEmail@163.com",
- 		'password'		 => '123456',
+ 		'username'		 => "17862701356",
+ 		'password'		 => '111111',
  		'device_type'	=> "pc"
  ];
  $url = "http://localhost:8888/api/user/public/login";

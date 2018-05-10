@@ -203,18 +203,16 @@ class PublicController extends RestBaseController{
         }
 
         $findUser = Db::name("user")->where($findUserWhere)->find();
-
         if (empty($findUser)) {
             $this->error("用户不存在!");
         } else {
-
             switch ($findUser['user_status']) {
                 case 0:
                     $this->error('您已被拉黑!');
                 case 2:
                     $this->error('账户还没有验证成功!');
             }
-
+			
             if (!cmf_compare_password($data['password'], $findUser['user_pass'])) {
                 $this->error("密码不正确!");
             }
@@ -236,7 +234,8 @@ class PublicController extends RestBaseController{
         $new_data['last_login_ip'] = get_client_ip();
         $new_data['last_login_time'] = time();
         Db::name('user')->where('id',$findUser['id'])->update($new_data);
-        
+		
+		$token = Db::name('user_token')->where('user_id', $findUser['id'])->find();
         $this->success("登录成功!", ['token' => $token, 'user' => $findUser]);
     }
 

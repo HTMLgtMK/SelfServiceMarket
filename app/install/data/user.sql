@@ -101,11 +101,12 @@ CREATE TABLE IF NOT EXISTS `tb_user` (
 
 --
 -- 转存表的数据 `tb_user`
+-- 密码: 111111
 --
 
 INSERT INTO `tb_user`(`id`,`name`,`mobile`,`user_pass`,`user_status`,`user_login`,`user_email`,`last_login_ip`,`last_login_time`,
 			`user_activation_key`, `create_time`,`point`,`balance`,`user_nickname`,`avatar`,`sex`,`birthday`,`user_level`) VALUES
-('1','NON VIP','17862701356','111111','1','111111111111','111111111111@gt.com'
+('1','NON VIP','17862701356','###f7a5371c3ba3df3d6e492f7de8e64df4','1','111111111111','111111111111@gt.com'
 	,'127.0.0.1','0','000000','0','0','0','non vip','','0','0','1');
 
 --
@@ -194,5 +195,19 @@ CREATE TABLE IF NOT EXISTS `cmf_user_action_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='访问记录表';
 
 
+-- --------------------------------------------------------
 
+--
+-- 表的结构 `tb_user_grant`
+--
 
+CREATE TABLE IF NOT EXISTS `tb_user_grant` (
+	`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '点击授权的用户ID',
+	`token` CHAR(32) NOT NULL DEFAULT '' COMMENT '授权字符串',
+	`action` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '请求操作',
+	`status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '授权状态, 1:等待扫描, 2:已授权, 3:超时关闭授权, 4:已扫描,尚未授权',
+	`create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+	`expire_time` int(11) NOT NULL DEFAULT '0' COMMENT '授权过期时间',
+	PRIMARY KEY(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户授权请求表';
