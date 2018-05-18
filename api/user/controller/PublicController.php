@@ -247,7 +247,7 @@ class PublicController extends RestBaseController{
             'token'       => $this->token,
             'user_id'     => $userId,
             'device_type' => $this->deviceType
-        ])->update(['token' => '']);
+        ])->update(['token' => '', 'expire_time' => time()]);//过期时间也要修改，否则不能正常生成token
 
         $this->success("退出成功!");
     }
@@ -255,6 +255,7 @@ class PublicController extends RestBaseController{
     // 用户密码重置
     public function passwordReset()
     {
+		$userId = $this->getUserId();
         $validate = new Validate([
             'username'          => 'require',
             'password'          => 'require',
@@ -272,7 +273,7 @@ class PublicController extends RestBaseController{
             $this->error($validate->getError());
         }
 
-        $userWhere = [];
+        $userWhere = ["id"=>$userId];
         if (Validate::is($data['username'], 'email')) {
             $userWhere['user_email'] = $data['username'];
         } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
@@ -290,6 +291,5 @@ class PublicController extends RestBaseController{
         Db::name("user")->where($userWhere)->update(['user_pass' => $userPass]);
 
         $this->success("密码重置成功,请使用新密码登录!");
-
     }
 }

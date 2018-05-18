@@ -21,6 +21,15 @@
 			<input type="number" class="form-control" name="count" style="width: 80px;" value="{:input('request.count/s','')}" placeholder="请输入{:lang('DISCOUNT_COUNT')}">
 			优惠剩余:
 			<input type="number" class="form-control" name="rest" style="width: 80px;" value="{:input('request.rest/s','')}" placeholder="请输入{:lang('DISCOUNT_RSET')}">
+			开放性:
+			<select id="select-discount_open" class="form-control" name="open" style="width:80px;" >
+				<option value="1">全部</option>
+				<option value="2">仅限会员</option>
+			</select>
+			<script type="text/javascript">
+				var ss = document.getElementById("select-discount_open");
+				ss.value = "{:input('request.open/s', 1)}";
+			</script>
 			开始时间:
 			<input type="text" class="form-control js-datetime" name="create_time" style="width: 120px;" value="{:input('request.create_time/s','')}" placeholder="请输入{:lang('DISCOUNT_CREATE_TIME')}">
 			过期时间:
@@ -39,7 +48,8 @@
 					<th>{:lang('DISCOUNT_CREATE_TIME')}</th>
 					<th>{:lang('DISCOUNT_EXPIRE_TIME')}</th>
 					<th>{:lang('DISCOUNT_COUNT')}</th>
-					<th>{:lang('DISCOUNT_REST')}</th>					
+					<th>{:lang('DISCOUNT_REST')}</th>
+					<th>{:lang('DISCOUNT_OPEN')}</th>					
 					<th>{:lang('REMARK')}</th>
 					<th width="130">{:lang('ACTIONS')}</th>
 				</tr>
@@ -55,6 +65,13 @@
 					<td>{:date('Y-m-d H:i', $vo.expire_time)}</td>
 					<td>{$vo.count}</td>
 					<td>{$vo.rest}</td>
+					<td>
+						<if condition="$vo['open'] eq 1" >
+							<span style="color:#000000;">全部</span>
+						<elseif condition="$vo['open'] eq 2" />
+							<span style="color:#2c3e50;">仅限会员</span>
+						</if>
+					</td>
 					<td>{$vo.remark}</td>
 					<!-- 操作 -->
 					<td>

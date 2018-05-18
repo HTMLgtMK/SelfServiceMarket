@@ -32,9 +32,6 @@ class RestBaseController
     //用户
     protected $user;
 
-    //用户类型
-    protected $userType;
-
     protected $allowedDeviceTypes = ['mobile', 'android', 'iphone', 'ipad', 'web', 'pc', 'mac', 'wxapp'];
 
     /**
@@ -119,7 +116,6 @@ class RestBaseController
         if (!empty($user)) {
             $this->user     = $user;
             $this->userId   = $user['id'];
-            $this->userType = $user['user_type'];
         }
 
     }
@@ -285,7 +281,7 @@ class RestBaseController
     public function getUserId()
     {
         if (empty($this->userId)) {
-            $this->error(['code' => 10001, 'msg' => '用户未登录']);
+            $this->error('用户未登录');// 原来的code = 10001
         }
         return $this->userId;
 

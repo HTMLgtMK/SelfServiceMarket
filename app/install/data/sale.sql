@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `tb_discount` (
 	`expire_time` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
 	`count` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '折扣总数',
 	`rest` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '折扣剩余数量',
+	`open` tinyint(2) NOT NULL DEFAULT '1' COMMENT '开发性, 1:全面开放, 2:仅对会员开放'
 	`remark` text COMMENT '备注',
 	PRIMARY KEY(`id`),
 	UNIQUE KEY(`name`),
@@ -50,6 +51,22 @@ CREATE TABLE IF NOT EXISTS `tb_discount_goods` (
 	FOREIGN KEY(`goods_type_id`) REFERENCES `tb_goods_type`(`id`),
 	CONSTRAINT `chk_discount_goods_rest` CHECK (`rest` <= `count`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='折扣关系表';
+
+--
+-- 表的结构 `tb_discount_user`
+--
+
+CREATE TABLE IF NOT EXISTS `tb_discount_user` (
+	`id` int UNSIGNED NOT NULL AUTO_INCREMENT, 
+	`discount_id` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠ID',
+	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户ID',
+	`count` int UNSIGNED NOT NULL DEFAULT '1' COMMENT '优惠数量',
+	`rest` int UNSIGNED NOT NULL DEFAULT '1' COMMENT '剩余数量',
+	`create_time` int(11) NOT NULL DEFAULT '1' COMMENT '创建时间',
+	PRIMARY KEY(`id`),
+	FOREIGN KEY(`discount_id`) REFERENCES `tb_discount`(`id`),
+	FOREIGN KEY(`user_id`) REFERENCES `tb_user`(`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '优惠用户表';
 
 --
 -- 表的结构 `tb_cart`

@@ -6,7 +6,7 @@
  */
  
  $url = "http://localhost:8888/api/user/User_Grant/queryGrantStatus";
- $arr = ['id' => '1'];
+ $arr = ['id' => '63'];
  $ch = curl_init();
  curl_setopt($ch, CURLOPT_URL, $url);
  curl_setopt($ch, CURLOPT_POST, 1);

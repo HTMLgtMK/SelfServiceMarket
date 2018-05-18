@@ -81,6 +81,18 @@ class UserGrantController extends RestBaseController {
 										->field("id, name, user_login, avatar, user_nickname, point, balance, user_level")
 										->where('id', $req['user_id'])
 										->find();
+							$where = array();
+							$where['b.create_time'] = ['<', time()];
+							$where['b.expire_time'] = ['>', time()];
+							$where['a.rest'] = ['>', '0'];
+							$where['a.user_id'] = $user['id'];
+							$discount = Db::name('discount_user')
+											->alias('a')
+											->field('a.id, a.discount_id, a.count, a.rest, a.create_time')
+											->join("__DISCOUNT__ b", "a.discount_id = b.id")
+											->where($where)
+											->select();
+							$user['discount'] = $discount;
 							break;
 						}
 						case 3:{
@@ -105,65 +117,46 @@ class UserGrantController extends RestBaseController {
 	 */
 	public function grant(){
 		if($this->request->isPost()){
+			if(empty($this->user)){
+				$this->error("登陆已失效!");
+			}
 			$data = $this->request->param();
 			$validate = new Validate([
-				'token'	=> 'require',
-				'user_id' => 'require',
-				'user_token' => 'require'
+				'token'	=> 'require'
 			]);
 			$validate->message([
-				'token.require'		 => '请传入授权请求token串!',
-				'user_id.require'	 => '请传入用户ID!',
-				'user_token.require' => '请传入用户Token!'
+				'token.require'		 => '请传入授权请求token串!'
 			]);
 			if(!$validate->check($data)){
 				$this->error($validate->getError());
 			}
-			// 检查数据库中是否有该用户
-			$user = Db::name('user')->where('id', $data['user_id'])->find();
-			if(!empty($user)){
-				// 检查用户Token是否正确
-				$userToken = Db::name('user_token')->where('user_id', $data['user_id'])->find();
-				if(!empty($userToken)){
-					if( $data['user_token'] != $userToken['token']){
-						$this->error("用户Token错误!");
-					}
-					$now = time();
-					if($now > $userToken['expire_time']){
-						$this->error("用户登陆过期!");//请用户重新登陆!
-					}// else 用户状态正常, 可进行授权操作
-				}else{
-					$this->error("用户Token不存在! 用户未登陆?");
+			$userId = $this->getUserId();
+			$req = Db::name('user_grant')->where('token', $data['token'])->find();
+			if(!empty($req)){
+				//检查授权请求是否已经过期
+				$now = time();
+				if($now > $req['expire_time']){
+					$this->error("授权请求已经过期!");
 				}
-				$req = Db::name('user_grant')->where('token', $data['token'])->find();
-				if(!empty($req)){
-					//检查授权请求是否已经过期
-					$now = time();
-					if($now > $req['expire_time']){
-						$this->error("授权请求已经过期!");
-					}
-					if($req['user_id'] != $data['user_id']){
-						$this->error("非扫描用户, 不可授权!");
-					}
-					if($req['status'] == 2){// 已经授权，并且还在有效期内
-						$this->success("授权成功!");
-					}
-					// 将用户id用于更新授权表
-					$update = [
-						'user_id' 	=> $data['user_id'],
-						'status'	=> '2'
-					];
-					$result = Db::name('user_grant')->where('id', $req['id'])->update($update);
-					if($result){
-						$this->success("授权成功!");
-					}else{
-						$this->error("授权失败!");
-					}
+				if($req['user_id'] != $userId){
+					$this->error("非扫描用户, 不可授权!");
+				}
+				if($req['status'] == 2){// 已经授权，并且还在有效期内
+					$this->success("授权成功!");
+				}
+				// 将用户id用于更新授权表
+				$update = [
+					'user_id' 	=> $userId,
+					'status'	=> '2'
+				];
+				$result = Db::name('user_grant')->where('id', $req['id'])->update($update);
+				if($result){
+					$this->success("授权成功!");
 				}else{
-					$this->error("授权请求不存在!");
+					$this->error("授权失败!");
 				}
 			}else{
-				$this->error("用户不存在!");
+				$this->error("授权请求不存在!");
 			}
 		}
 	}
@@ -173,21 +166,23 @@ class UserGrantController extends RestBaseController {
 	 */
 	public function scan(){
 		if($this->request->isPost()){
+			if(empty($this->user)){
+				$this->error("登陆已失效!");
+			}
 			$data = $this->request->param();
 			$validate = new Validate([
-				'token'	=> 'require',
-				'user_id' => 'require'
+				'token'	=> 'require'
 			]);
 			$validate->message([
-				'token.require'		 => '请传入授权请求token串!',
-				'user_id.require'	 => '请传入用户ID!'
+				'token.require'		 => '请传入授权请求token串!'
 			]);
 			if(!$validate->check($data)){
 				$this->error($validate->getError());
 			}
+			$userId = $this->getUserId();
 			$req = Db::name('user_grant')->where('token', $data['token'])->find();
 			if(!empty($req)){
-				if($req['user_id'] !=0 && $req['user_id'] != $data['user_id']){// 已经被别的会员扫描
+				if($req['user_id'] !=0 && $req['user_id'] != $userId){// 已经被别的会员扫描
 					$this->error("二维码已失效!");
 				}
 				$now = time();
@@ -199,7 +194,7 @@ class UserGrantController extends RestBaseController {
 				}// else 
 				// 将用户插入到数据库中
 				$update = [
-					'user_id' 	=> $data['user_id'],
+					'user_id' 	=> $userId,
 					'status'	=> '4'
 				];// 
 				$result = Db::name('user_grant')->where('id', $req['id'])->update($update);

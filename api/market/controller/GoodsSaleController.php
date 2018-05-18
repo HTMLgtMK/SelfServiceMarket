@@ -102,9 +102,18 @@ class GoodsSaleController extends GoodsSaleBaseController {
 								$code = 3;
 								$res  = $this->updateGoodsStatus($outTradeNo, $code);
 							}
+							// 检查数据库中交易状态
+							$deal = Db::name('sale')->where('id', "$outTradeNo")->find();
+							if($deal['status'] == $code){ // 已经保存过了
+								$this->success("请求成功!", '',
+									['code'=>"$code", "status"=>"$trade_status", "out_trade_no"=>"$outTradeNo"]);
+							}
+							// 首次检查，用户交易成功，为会员添加积分
+							if($trade_status == "SUCCESS"){
+								$this->updateUserPoint($deal);
+							}
 							//更新数据库
 							$wxpay_detail = json_encode($result);
-							$deal = Db::name('sale')->where('id',"$outTradeNo")->find();
 							if(!empty($deal['pay_detail'])){
 								$pay_detail = json_decode($deal['pay_detail']);
 								$pay_detail['wxpay'] = $wxpay_detail;
@@ -116,9 +125,7 @@ class GoodsSaleController extends GoodsSaleBaseController {
 								"pay_detail" => json_encode($pay_detail),
 								"modify_time" => time()
 							];
-							if($deal['status'] == 2){// 若原来的交易状态为关闭，则修改为现在的状态
-								$arr['status'] = $code;
-							}
+							$arr['status'] = $code;
 							$res = Db::name('sale')->where('id',"$outTradeNo")->update($arr);
 							if($res){
 								$this->success("请求成功!", '',
@@ -182,6 +189,16 @@ class GoodsSaleController extends GoodsSaleBaseController {
 							$arr['status'] = '3';
 						}
 						$res_code = $arr['status'];//返回客户端的码
+						// 检查数据库中交易状态
+						$sale = Db::name('sale')->where('id', "$outTradeNo")->find();
+						if($sale['status'] == $res_code){ // 已经保存过了
+							$this->success("查询成功!",'',
+									["code"=>"$res_code","status"=>"$trade_status","out_trade_no"=>"$outTradeNo"]);
+						}
+						// 首次检查，用户交易成功，为会员添加积分
+						if($trade_status == "TRADE_SUCCESS"){
+							$this->updateUserPoint($sale);
+						}
 						$json_result = json_encode($result);
 						$arr['pay_detail'] = json_encode(['alipay' => $json_result ]);
 						$arr['modify_time'] = time();
@@ -274,14 +291,19 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				}
 				//修改优惠使用信息(撤销时也不恢复优惠的使用)
 				if(!empty($discount)){
+					$user_id = $data['user_id'];
 					$discount_detail = json_decode($discount_detail, true);
 					foreach($discount_detail as $discount){
 						$discount_id = $discount['id'];
-						if($discount['rest'] == 2147483647){//表示不减少优惠数量
-							continue;
-						}
+						// if($discount['rest'] == 2147483647){//表示不减少优惠数量
+							// continue;
+						// }
 						$rest = $discount['rest'] - $discount['use'];
-						Db::name('discount')->where('id',"$discount_id")->update(['rest'=>$rest]);
+						$where = [
+							'user_id'		=> "$user_id",
+							'discount_id'	=> "$discount_id"
+						];
+						Db::name('discount_user')->where($where)->update(['rest'=>$rest]);
 					}
 				}
 				$this->success("提交订单成功!",'' ,['out_trade_no'=>"$id"]);
@@ -440,6 +462,34 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			$goodsDetailList[] = $goodsDetail->getGoodsDetail();//是需要调用这个方法，否则获取为空
 		}
 		return $goodsDetailList;
+	}
+	
+	/**
+	 * 更新会员积分
+	 */
+	private function updateUserPoint($deal){
+		$user_id = $deal['user_id'];
+		$total_amount = $deal['total_amount'];
+		if($user_id > 1){ // 会员
+			// 暂定每5元1积分
+			$point = $total_amount / 500 + 1;
+			// 先写日志，再更新数据库
+			$action = $this->request->url();
+			$data = [
+				'user_id'			=> $user_id,
+				'create_time'		=> time(),
+				'action'			=> "$action",
+				'point'				=> $point
+			];
+			$res = Db::name("user_point_log")->insert($data);
+			$res = Db::name('user')->where('id', $user_id)->setInc('point', $point);
+			if($res) {
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return true; // 普通会员直接返回true
 	}
 }
  

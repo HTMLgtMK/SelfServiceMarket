@@ -48,8 +48,12 @@ class AdminMarketSaleDiscountController extends AdminBaseController {
 			$expire_time = $data['expire_time'];
 			$where['expire_time'] = ['<=', "$expire_time"];
 		}
+		if(!empty($data['open'])){
+			$open = $data['open'];
+			$where['open'] = "$open";
+		}
 		
-		$discounts = Db::name('discount')->where($where)->paginate(10);
+		$discounts = Db::name('discount')->where($where)->order('id desc')->paginate(10);
 		$discounts->appends($data);
 		
 		//获取分页显示

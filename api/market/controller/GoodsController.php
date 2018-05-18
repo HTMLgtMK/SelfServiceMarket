@@ -165,7 +165,9 @@ class GoodsController extends RestAdminBaseController {
 						->join("__GOODS_TYPE__ b", "a.type_id = b.id")
 						->where("a.id","$id")
 						->find();
-			$res[] = $goods;
+			if(!empty($goods)){ // 提交的商品ID不存在
+				$res[] = $goods;
+			}
 		}
 		$discount = $this->getDiscounts();
 		$this->success("获取商品信息成功!",["goods"=>$res, "discount"=>$discount]);
@@ -174,13 +176,13 @@ class GoodsController extends RestAdminBaseController {
 	/*获取商品优惠信息*/
 	private function getDiscounts(){
 		$where = array(
-			'b.rest' 			=> ['gt', 0],
+			// 'b.rest' 			=> ['gt', 0], // 只需要会员有该优惠就行
 			'b.create_time'		=> ['lt', time()],
 			'b.expire_time'		=> ['gt', time()]
 		);
 		$result = Db::name('discount_goods')
 						->alias('a')
-						->field('a.id, a.discount_id, a.goods_type_id, b.name, b.extent, b.coin, b.rest')
+						->field('a.id, a.discount_id, a.goods_type_id, b.name, b.extent, b.coin, b.rest, b.open')
 						->join('__DISCOUNT__ b', "a.discount_id = b.id")
 						->where($where)
 						->select();

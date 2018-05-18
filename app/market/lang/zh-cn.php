@@ -73,6 +73,7 @@ return [
 	'DISCOUNT_EXPIRE_TIME'				 => '过期时间',
 	'DISCOUNT_COUNT'					 => '优惠总数',
 	'DISCOUNT_REST'						 => '剩余数量',
+	'DISCOUNT_OPEN'						 => '开放性',
 	'DISCOUNT_DELETE_CONFIRM_MSG'		 => '确定删除此优惠?',
 	'MARKET_SALE_DISCOUNT_GOODS_ADD'	 => '添加优惠商品',
 	'MARKET_DISCOUNT_GOODS'				 => '优惠商品',
