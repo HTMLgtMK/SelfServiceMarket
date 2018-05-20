@@ -27,7 +27,7 @@ class UserBalanceController extends RestUserBaseController {
 	 * 余额明细
 	 */
 	public function balanceIndex(){
-		if($this->request->isPost){
+		if($this->request->isPost()){
 			$userId = $this->getUserId();
 			$logs = Db::name('user_balance_log')->where('user_id', $userId)->order("id DESC")->paginate(10);
 			$this->success("请求成功!", $logs);

@@ -84,19 +84,18 @@ class UserPointController extends RestUserBaseController {
 				'user_id'		=> $userId,
 				'create_time'	=> time(),
 				'action'		=> "$action",
-				'point'			=> $point
-			];
+				'point'			=> (-1*$point)
+			];// 注意，这里积分是减去
 			$res = Db::name('user_point_log')->insert($data);
 			if(!$res){
 				Db::rollback(); // 回滚事务
 				$this->error("请求失败!");
 			}
-			$res = Db::name('user')->where('id', $userId)->setInc('balance', $balance);
-			if(!$res){
-				Db::rollback(); // 回滚事务
-				$this->error("请求失败!");
-			}
-			$res = Db::name('user')->where('id', $userId)->setDec('point', $point);
+			$data = [
+				'balance' 	=> ($this->user['balance'] + $balance),
+				'point'	=> ($this->user['point'] - $point)
+			];
+			$res = Db::name('user')->where('id', $userId)->update($data);
 			if(!$res){
 				Db::rollback(); // 回滚事务
 				$this->error("请求失败!");

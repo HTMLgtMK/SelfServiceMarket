@@ -169,12 +169,48 @@ class GoodsController extends RestAdminBaseController {
 				$res[] = $goods;
 			}
 		}
-		$discount = $this->getDiscounts();
+		$discount = $this->_getDiscounts();
 		$this->success("获取商品信息成功!",["goods"=>$res, "discount"=>$discount]);
 	}
 	
+	/**
+	 * 根据商品id获取批量商品信息, 只返回商品信息
+	 */
+	public function getGoodsInfo2(){
+		$data = $this->request->param();
+		//利用json格式传输EPC号
+		if(empty($data)){
+			$this->error("商品id不能为空!");
+		}
+		$size = count($data);
+		$res = [];
+		for($i=0;$i<$size;++$i){
+			$id = $data["$i"];
+			$goods = Db::name("goods")
+						->alias('a')
+						->field("a.*, b.name, b.images, b.price, b.address, b.company")
+						->join("__GOODS_TYPE__ b", "a.type_id = b.id")
+						->where("a.id","$id")
+						->find();
+			if(!empty($goods)){
+				$res[] = $goods;
+			} else { // 提交的商品ID存在, 创建一个空的Goods, type_id = 0, status = 4
+				$goods = ["id"=>$id, 'type_id'=>'0', 'manufacture_date'=>0, 'batch_number'=>'','status'=>4, 
+					'name'=>'', 'images'=>'', 'price'=>0, 'address'=>'', 'company'=>''];
+				$res[] = $goods;
+			}
+		}
+		$this->success("获取商品信息成功!", ['goods'=>$res]);
+	}
+	
+	/*获取优惠信息*/
+	public function getDiscounts(){
+		$discount = $this->_getDiscounts();
+		$this->success("获取商品优惠信息成功!", ['discount'=>$discount]);
+	}
+	
 	/*获取商品优惠信息*/
-	private function getDiscounts(){
+	private function _getDiscounts(){
 		$where = array(
 			// 'b.rest' 			=> ['gt', 0], // 只需要会员有该优惠就行
 			'b.create_time'		=> ['lt', time()],

@@ -254,7 +254,8 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				'pay_amount'		=> 'require',
 				'discount_amount'	=> 'require',
 				'total_amount'		=> 'require',
-				'goods_detail'		=> 'require'
+				'goods_detail'		=> 'require',
+				'discount_detail'	=> 'require'
 			]);
 			$validate->message([
 				'user_id.require'			=> '请先登陆vip或选择用户类型!',
@@ -263,11 +264,16 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				'pay_amount.require'		=> '请传入支付金额!',
 				'discount_amount.require'	=> '请传入折扣金额!',
 				'total_amount.require'		=> '请传入总金额!',
-				'goods_detail.require'		=> '请传入商品详情!'
+				'goods_detail.require'		=> '请传入商品详情!',
+				'discount_detail.require'	=> '请传入商品优惠详情!'
 			]);
 			if(!$validate->check($data)){
 				$this->error($validate->getError());
 			}
+			// 需要替换空格为'+', 否则Base64解码为乱码 !important
+			$data['goods_detail'] = str_replace(' ', '+', $data['goods_detail']);
+			$data['discount_detail'] = str_replace(' ', '+', $data['discount_detail']);
+			
 			$data['goods_detail'] = base64_decode($data['goods_detail']);
 			$discount_detail = base64_decode($data['discount_detail']);
 			unset($data['discount_detail']);

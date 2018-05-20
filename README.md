@@ -2,6 +2,31 @@
 
 -------------------------------------------------
 
+2018.05.20 18:33
+
+1. 修改了获取商品详情接口，拆分成获取优惠和获取商品。
+	当商品不存在时(可能是别的标签)，需要返回传入的商品ID.
+
+2. 在后台`base64_decode`之前，需要把从POST中获取得到的数据中的
+	空格' '替换成加号'+', 否则会出现乱码。
+	eg:
+	```php
+	// php 后台获取得到的base64编码: W3siaW1hZ2VzIjoiIiwiYWRkcmVzcyI6IuWxseS4nOWogea1tyIsImJhdGNoX251bWJlciI6IjEyMzQ1NiIsInR5cGVfaWQiOjIsImRpc2NvdW50Ijp7ImV4dGVudCI6MSwicmVzdCI6MjE0NzQ4MzY0NywibmFtZSI6Iueri WHjzXliIYiLCJnb29kc190eXBlX2lkIjoyLCJpZCI6NCwib3BlbiI6MSwiY29pbiI6LTUsImRpc2NvdW50X2lkIjoxMX0sImdvb2RzX2lkIjoiMjAxMjgxMDEwMDAyMDAwMDAwMDAwMDAwMDAwMDAwMTEiLCJtYW51ZmFjdHVyZV9kYXRlIjoxNTI2NzQ1NjAwLCJwcmljZSI6MzAwLCJuYW1lIjoi6Zu25bqm5Y v5LmQIiwiY29tcGFueSI6ImhpdHdoLWd0IiwiaWQiOjIsInN0YXR1cyI6MX1d
+	// PC端传送的base64编码: W3siaW1hZ2VzIjoiIiwiYWRkcmVzcyI6IuWxseS4nOWogea1tyIsImJhdGNoX251bWJlciI6IjEyMzQ1NiIsInR5cGVfaWQiOjIsImRpc2NvdW50Ijp7ImV4dGVudCI6MSwicmVzdCI6MjE0NzQ4MzY0NywibmFtZSI6Iueri+WHjzXliIYiLCJnb29kc190eXBlX2lkIjoyLCJpZCI6NCwib3BlbiI6MSwiY29pbiI6LTUsImRpc2NvdW50X2lkIjoxMX0sImdvb2RzX2lkIjoiMjAxMjgxMDEwMDAyMDAwMDAwMDAwMDAwMDAwMDAwMTEiLCJtYW51ZmFjdHVyZV9kYXRlIjoxNTI2NzQ1NjAwLCJwcmljZSI6MzAwLCJuYW1lIjoi6Zu25bqm5Y+v5LmQIiwiY29tcGFueSI6ImhpdHdoLWd0IiwiaWQiOjIsInN0YXR1cyI6MX1d
+	
+	// 替换
+	$data['goods_detail'] = str_replace(' ', '+', $data['goods_detail']);
+	$data['discount_detail'] = str_replace(' ', '+', $data['discount_detail']);
+	```
+	
+-------------------------------------------------
+
+2018.05.19 23:06
+
+1. 完成了优惠广场接口，会员优惠接口: `/api/market/controller/DiscountController.php`
+
+-------------------------------------------------
+
 2018.05.18 09:24
 
 1. 添加了会员交易成功添加积分。在微信交易查询和支付宝交易查询时，若检查到交易成功，
