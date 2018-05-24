@@ -118,3 +118,28 @@ CREATE VIEW `view_store_sale` AS
 	SELECT `store_id`, sum(`total_amount`) as `sale_total_amount` FROM `tb_sale` 
 		WHERE `create_time` BETWEEN unix_timestamp(curdate()) AND unix_timestamp() 
 		GROUP BY `store_id` ;
+		
+--
+-- 表的结构 `tb_balance_pay` 余额支付表
+--
+
+CREATE TABLE IF NOT EXISTS `tb_balance_pay` (
+	`id` char(32) NOT NULL COMMENT '余额支付订单号, BPAY+时间戳(10)+随机数(16)',
+	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户ID',
+	`token` char(32) NOT NULL DEFAULT '' COMMENT '交易token串',
+	`out_trade_no` char(32) NOT NULL DEFAULT '' COMMENT '交易单号',
+	`total_amount` int NOT NULL DEFAULT '0' COMMENT '总金额(分)',
+	`discount_amount` int NOT NULL DEFAULT '0' COMMENT '优惠金额(分)',
+	`pay_amount` int NOT NULL DEFAULT '0' COMMENT '支付金额(分)',
+	`time_expire` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
+	`time_start` int(11) NOT NULL DEFAULT '0' COMMENT '交易开始时间',
+	`subject` char(255) NOT NULL DEFAULT '' COMMENT '交易标题',
+	`goods_detail` text NOT NULL COMMENT '商品详情',
+	`store_id` int NOT NULL DEFAULT '0' COMMENT '店铺id',
+	`terminal_id` int NOT NULL DEFAULT '0' COMMENT '终端id',
+	`modify_time` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
+	`status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '交易状态, 1:订单尚未创建, 2:等待付款, 4:交易成功, 4:交易关闭, 5:交易取消',
+	PRIMARY KEY(`id`),
+	FOREIGN KEY(`user_id`) REFERENCES `tb_user`(`id`),
+	FOREIGN KEY(`out_trade_no`) REFERENCES `tb_sale`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '余额支付表';

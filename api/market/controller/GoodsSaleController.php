@@ -13,6 +13,10 @@ use think\Validate;
 use api\market\model\common\builder\GoodsDetail;//将支付宝的商品详情类改造公用
 use api\market\model\alipay\builder\AlipayTradePrecreateContentBuilder;
 use api\market\model\wxpay\NativePay;//使用example中的类
+use api\market\model\balancepay\builder\BalancePayPrecreateContentBuilder;
+use api\market\model\balancepay\BalancePayPrecreateRequest;
+use api\market\model\balancepay\BalancePayTradeQuery;
+
 
 class GoodsSaleController extends GoodsSaleBaseController {
 	
@@ -54,7 +58,7 @@ class GoodsSaleController extends GoodsSaleBaseController {
 				$this->error("取消交易失败!");
 			}
 		}else{
-			$thisi->error("请求方式错误!");
+			$this->error("请求方式错误!");
 		}
 	}
 	
@@ -414,6 +418,118 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			}
 		}else{
 			$this->error("请求方式错误!");
+		}
+	}
+	
+	/**
+	 * 余额支付 预下单请求
+	 */
+	public function balance_qrpay(){
+		if($this->request->isPost()){
+			$data = $this->request->param();
+			$validate = new Validate([
+				'user_id'		=> 'require',
+				'out_trade_no'	=> 'require'
+			]);
+			$validate->message([
+				'user_id.require'		=> '请用户先授权登陆!',
+				'out_trade_no.require'	=> '请传入订单ID!'
+			]);
+			if(!$validate->check($data)){
+				$this->error($validate->getError());
+			}
+			$userId = $data['user_id'];
+			$outTradeNo = $data['out_trade_no'];
+			
+			$deal = Db::name('sale')->where('id', $outTradeNo)->find();
+			if(empty($deal)){
+				$this->error("订单不存在!");
+			}
+			if($deal['status'] != 1){
+				$this->error("订单已经过期!");
+			}
+			$userBalance = Db::name('user')->where('id', $userId)->limit(1)->column('balance');
+			if(empty($userBalance)){
+				$this->error("会员不存在!");
+			}
+			$userBalance = $userBalance[0];
+			if($userBalance < $deal['pay_amount']){
+				$this->error("余额不足!");
+			}
+			//解析上传的goods_detail数据,生成适合支付宝的数据
+			$goodsDetailList = $this->myGoodsObjs2GoodsDetail($deal['goods_detail']);
+			$subject = $outTradeNo;
+			$time_start = time();
+			
+			$builder = new BalancePayPrecreateContentBuilder(); // 预下单
+			$builder->setUserId($userId);
+			$builder->setOutTradeNo($outTradeNo);
+			$builder->setTotalAmount($deal['total_amount']);
+			$builder->setDiscountAmount($deal['discount_amount']);
+			$builder->setPayAmount($deal['pay_amount']);
+			$builder->setTimeStart($time_start);
+			$builder->setTimeExpire(5*1000);
+			$builder->setSubject($subject);
+			$builder->setGoodsDetailList($goodsDetailList);
+			$builder->setStoreId($deal['store_id']);
+			$builder->setTerminalId($deal['terminal_id']);
+			
+			$content = $builder->getContent();
+			$result = BalancePayPrecreateRequest::request($content);
+			if($result['code'] == 1){
+				$this->success("预下单请求成功!", '', ['balancepay' => $result['data']]);
+			}else{
+				$this->error($result['msg']);
+			}
+		}
+	}
+	
+	/**
+	 * 余额支付交易状态结果请求
+	 */
+	public function balancePayQuery(){
+		if($this->request->isPost()){
+			$validate = new Validate([
+				'out_trade_no'	=> 'require',
+				'token'			=> 'require'
+			]);
+			$validate->message([
+				'out_trade_no.require'	=> '请传入商户订单号!',
+				'token.require'			=> '请传入交易Token'
+			]);
+			$data = $this->request->param();
+			if(!$validate->check($data)){
+				$this->error($validate->getError());
+			}
+			$result = BalancePayTradeQuery::query($data);
+			if($result['code'] == 1){
+				$outTradeNo = $data['out_trade_no'];
+				$resultData = $result['data'];
+				switch($resultData['status']){
+					case 3:
+					case 4:
+					case 5:{
+						// 检查数据库中交易状态
+						$sale = Db::name('sale')->where('id', "$outTradeNo")->find();
+						if($sale['status'] == 1){ // 商家后台交易未更新 ,  1: 待付款, 2:超时关闭, 3:成功, 4:取消',
+							$this->updateUserPoint($sale);
+							$json_result = json_encode($result);
+							$arr['pay_detail'] = json_encode(['alipay' => $json_result ]);
+							$arr['modify_time'] = time();
+							$res = Db::name('sale')->where("id","$outTradeNo")->update($arr);//更新交易表
+							if(!empty($res)){//更新交易表成功
+								//更新商品表，修改交易涉及的商品
+								$res_code = $resultData['status'] == 3 ? 3: 1;//1: 待售, 2: 已售
+								$res  = $this->updateGoodsStatus($outTradeNo, $res_code);
+							}
+						}
+						break;
+					}
+				}
+				$this->success("查询成功", '', $result['data']);
+			}else{
+				$this->error($result['msg']);
+			}
 		}
 	}
 	

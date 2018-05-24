@@ -211,3 +211,17 @@ CREATE TABLE IF NOT EXISTS `tb_user_grant` (
 	`expire_time` int(11) NOT NULL DEFAULT '0' COMMENT '授权过期时间',
 	PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户授权请求表';
+
+--
+-- 表的结构 `tb_user_pay_shadow` 会员支付密码表
+--
+
+CREATE TABLE IF NOT EXISTS `tb_user_pay_shadow`(
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '会员ID',
+	`shadow` varchar(255) NOT NULL DEFAULT '' COMMENT '加密后支付密码',
+	`modify_time` int(10) NOT NULL DEFAULT '0' COMMENT '最后一次修改的时间',
+	PRIMARY KEY(`id`),
+	FOREIGN KEY(`user_id`) REFERENCES `tb_user`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '会员支付密码表';
+
