@@ -203,6 +203,42 @@ class GoodsController extends RestAdminBaseController {
 		$this->success("获取商品信息成功!", ['goods'=>$res]);
 	}
 	
+	/**
+	 * 安保系统获取商品的简单信息
+	 */
+	public function getGoodsSimpleInfo(){
+		$data = $this->request->param();
+		//利用json格式传输SimpleGoods
+		if(empty($data)){
+			$this->error("EPC不能为空!");
+		}
+		$size = count($data);
+		$res = [];
+		for($i=0;$i<$size;++$i){
+			$data["$i"] = htmlspecialchars_decode($data["$i"]); // 提交的时候String.getBytes()自动加了html加密???
+			$simpleGoods = json_decode($data["$i"], true);
+			$id = $simpleGoods['epc'];
+			$time = $simpleGoods['time'];
+			$goods = Db::name("goods")
+						->alias('a')
+						->field("a.id, a.status , b.name")
+						->join("__GOODS_TYPE__ b", "a.type_id = b.id")
+						->where("a.id","$id")
+						->find();
+			$simpleGoods = [ 'epc' => $id, 'time' => $time];
+			if(!empty($goods)){
+				$simpleGoods['name'] = $goods['name'];
+				$simpleGoods['status'] = $goods['status'];
+				$res[] = $simpleGoods;
+			} else { // 提交的商品ID存在, 创建一个空的Goods, type_id = 0, status = 4
+				$simpleGoods['name'] = "";
+				$simpleGoods['status'] = 4;
+				$res[] = $simpleGoods;
+			}
+		}
+		$this->success("获取商品信息成功!", ['goods'=>$res]);
+	}
+	
 	/*获取优惠信息*/
 	public function getDiscounts(){
 		$discount = $this->_getDiscounts();

@@ -19,7 +19,13 @@ class UserInfoController extends RestUserBaseController {
 		$avatar = $this->user['avatar'];
 		$dir = ROOT_PATH . 'public' . DS . 'upload';
 		$realPath = $dir . DS . $avatar;
-		$content = file_get_contents($realPath);
+		$content='';
+		try{
+			$content = file_get_contents($realPath);
+		}catch(\Exception $e){
+			// continue ?
+		}
+		
 		$header['Content-Type'] = "image/png";
 		$response = Response::create($content, 'image/png')->header($header);
 		throw new HttpResponseException($response);

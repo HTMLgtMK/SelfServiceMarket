@@ -491,7 +491,7 @@ class GoodsSaleController extends GoodsSaleBaseController {
 		if($this->request->isPost()){
 			$validate = new Validate([
 				'out_trade_no'	=> 'require',
-				'token'			=> 'require'
+				'token'			=> 'require'	
 			]);
 			$validate->message([
 				'out_trade_no.require'	=> '请传入商户订单号!',
@@ -505,10 +505,22 @@ class GoodsSaleController extends GoodsSaleBaseController {
 			if($result['code'] == 1){
 				$outTradeNo = $data['out_trade_no'];
 				$resultData = $result['data'];
+				$arr = array(); // 更新交易表
 				switch($resultData['status']){
-					case 3:
-					case 4:
+					case 3:{
+						if(!array_key_exists('status', $arr)){
+							$arr['status'] = 3; //支付成功
+						}
+					}
+					case 4:{
+						if(!array_key_exists('status', $arr)){
+							$arr['status'] = 2; // 交易关闭
+						}
+					}
 					case 5:{
+						if(!array_key_exists('status', $arr)){
+							$arr['status'] = 4; //交易取消
+						}
 						// 检查数据库中交易状态
 						$sale = Db::name('sale')->where('id', "$outTradeNo")->find();
 						if($sale['status'] == 1){ // 商家后台交易未更新 ,  1: 待付款, 2:超时关闭, 3:成功, 4:取消',

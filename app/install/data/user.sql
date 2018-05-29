@@ -70,6 +70,7 @@ INSERT INTO `tb_user_level` (`id`,`name`,`count`,`status`) VALUES
 
 --
 -- 表的结构 `tb_user`
+-- UNIQUE key `mobile` `user_email` checked in runtime
 --
 
 CREATE TABLE IF NOT EXISTS `tb_user` (
@@ -93,9 +94,7 @@ CREATE TABLE IF NOT EXISTS `tb_user` (
 	`user_level` int NOT NULL DEFAULT '1' COMMENT '用户等级',
 	`more` text COMMENT '扩展属性',
 	PRIMARY KEY(`id`),
-	UNIQUE KEY(`mobile`),
 	UNIQUE KEY(`user_login`),
-	UNIQUE KEY(`user_email`),
 	FOREIGN KEY(`user_level`) REFERENCES `tb_user_level`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 

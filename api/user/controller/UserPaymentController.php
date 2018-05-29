@@ -13,6 +13,34 @@ use cmf\controller\RestUserBaseController;
 
 class UserPaymentController extends RestUserBaseController {
 	
+	/** 修改支付密码 */
+	public function modify_pay_password(){
+		if($this->request->isPost()){
+			$payPassword = $this->request->param("pay_password");
+			if(empty($payPassword)){
+				$this->error("请传入支付密码!");
+			}
+			$userId = $this->getUserId();
+			$userPayShadow = Db::name('user_pay_shadow')->where('user_id', $userId)->find();
+			$data = [
+				'user_id' 	=> $userId,
+				'shadow'	=> md5(sha1($payPassword)),
+				'modify_time'	=> time()
+			];
+			$res = false;
+			if(empty($userPayShadow)){
+				$res = Db::name('user_pay_shadow')->insert($data);
+			}else{
+				$res = Db::name('user_pay_shadow')->where('user_id', $userId)->update($data);
+			}
+			if($res){
+				$this->success("修改成功!");
+			}else{
+				$this->error("修改失败!");
+			}
+		}
+	}
+	
 	/**
 	 * 检查余额支付交易状态
 	 */
@@ -91,7 +119,7 @@ class UserPaymentController extends RestUserBaseController {
 			if(empty($userPayShadow)){
 				$this->error("用户未设置支付密码!");
 			}
-			if($userPayShadow != $data['pay_password']){
+			if($userPayShadow['shadow'] != $data['pay_password']){
 				$this->error("支付密码不正确!");
 			}
 			if($this->user['balance'] < $payment['pay_amount']){
@@ -105,7 +133,7 @@ class UserPaymentController extends RestUserBaseController {
 				$this->error("支付失败!");
 			}
 			$action = $this->request->url();
-			$userRestBalance = $user['balance']-$payment['pay_amount'];
+			$userRestBalance = $this->user['balance']-$payment['pay_amount'];
 			$balanceLog = [
 				'user_id'		=> $userId,
 				'create_time'	=> time(),
